@@ -1,0 +1,64 @@
+Apache Host Control v.1.0(ENG)
+
+    New features:
+        Bind zone support.
+        EncFS protection.
+        Easy tests.
+
+    FTP:
+        Custom login and password.
+        Any folder sharing functionality.
+        Subdomain folder fixes.
+
+    MySQL:
+        Custom login and password for database.
+
+    Nginx:
+        Many fixes and changes for all supported languages.
+        SSL support.
+        Proxy config for apache.
+        Enable/Disable functionality.
+
+    Apache:
+        Minor fixes.
+        Static optimization flag.
+        SSL protection functionality.
+
+    Installation:
+        lighttpd->simple_vhost was added.
+        One step for install all able services in package.
+        Firewall rules. (location: /etc/init.d/rc.fw)
+
+
+########################################################################################################################
+
+
+Apache Host Control v.1.0(RUS)
+
+    Добавлен модуль для работы с зонами Bind9.
+    Добавлены тесты, эмулирующие основные действия программы.
+    Добавлено шифрование, с использованием EncFS для директории с проектами.
+
+    FTP:
+        Добавлена поддержка кастомного логина и пароля.
+        Добавлена возможность указать любую папку.
+        Исправлена ошибка, из-за которой нельзя было расшарить директорию поддомена.
+
+    MySQL:
+        Добавлена поддержка кастомного логина и пароля.
+
+    Nginx:
+        Многочисленные исправления с хостами на всех поддерживаемых языках.
+        Добавлена поддержка SSL.
+        Добавлен конфиг проксирования на apache.
+        Добавлена возможность активировать/деактивировать хосты.
+
+    Apache:
+        Исправлены мелкие ошибки по добавлению хостов.
+        Добавлен флаг оптимизации статики.
+        Добавлена возомжность защиты хоста ssl сертификатом.
+
+    Installation:
+        Добавлена возможность установки lighttpd->simple_vhost.
+        Добавлена установка стандартного firewall-а.
+        Добавлена установка всех доступных сервисов.
