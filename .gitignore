@@ -1,5 +1,6 @@
 *.pyc
+*.pyo
+*.save
 .idea
 .DS_Store
-*.pyo
 

@@ -40,12 +40,14 @@ class CoreHttp(HostPath):
 		self.pid_path = '%s/%s.pid' % (self.run_dir, host_name)
 
 	def __setup_standard(self, host_name, data, files):
-		if self.type == 'php':
-			index_file = '%s/index.php' % data['website_dir']
-			ext = 'php'
-		elif self.type == 'python':
-			index_file = '%s/index.py' % data['website_dir']
-			ext = 'py'
+		ext = {
+			'python': 'py',
+			'php': 'php',
+			'ruby': 'rb'
+		}
+		if self.type in ext.keys():
+			ext = ext[self.type]
+			index_file = '%s/index.%s' % (data['website_dir'], ext)
 		self.project_root = data['website_dir']
 		config = {
 			'port': self.config['port'],
@@ -69,12 +71,44 @@ class CoreHttp(HostPath):
 				system_by_code("Error, when trying to save ssl host file!")
 		if not putFile(index_file, self.__getTemplate(self.type, ext) % config):
 			system_by_code("Error, when trying to save example file!")
+		os.chmod(index_file, 0777)
 
 	def _setup_php(self, host_name, data, files):
 		self.__setup_standard(host_name, data, files)
 
+	def _setup_ruby(self, host_name, data, files):
+		self.__setup_standard(host_name, data, files)
+
 	def _setup_python(self, host_name, data, files):
 		self.__setup_standard(host_name, data, files)
+
+	def _setup_ror(self, host_name, data, files):
+		self.project_root = data['website_dir']
+		bin = self.base.main['bin_rails']
+		config = {
+			'port': self.config['port'],
+			'hostname': host_name,
+			'root': '%s/public' % self.project_root,
+			'ssl_section': '',
+			'projects_dir': self.base.main['projects_directory'],
+			'optimize': self.__optimizationTemplate(),
+			'socket_path': self.socket_path,
+			'pid_path': self.pid_path
+		}
+
+		if not putFile(files['host_file'], self.__getTemplate(self.type) % config):
+			system_by_code("Error, when trying to save host file!")
+		if int(self.base.main['use_ssl']) == 1:
+			config['port'] = self.config['ssl_port']
+			config['ssl_section'] = self.ssl_template
+			if not putFile(files['ssl_host_file'], self.__getTemplate(self.type) % config):
+				system_by_code("Error, when trying to save example file!")
+		system_by_code('cd %s && %s www' % (data['domain_dir'], bin))
+		try:
+			uid = int(self.base.main['useruid'])
+			os.chown(self.project_root, uid, uid)
+		except Exception:
+			error_message("Can't change permissions to directory!")
 
 	def _setup_django(self, host_name, data, files):
 		project = host_name.replace('.', '_')
@@ -150,8 +184,9 @@ class CoreHttp(HostPath):
 			error_message('Website is exists!')
 
 		if self.type != 'django':
-			os.mkdir(data['domain_dir'])
-			os.mkdir(data['website_dir'])
+			os.mkdir(data['domain_dir'], 0755)
+			os.mkdir(data['website_dir'], 0755)
+
 		self.__setSocketAndPidPath(host_name)
 		if not hasattr(self, '_setup_%s' % self.type):
 			error_message("Please, check your command line arguments!")
