@@ -85,14 +85,12 @@ class Ahc(Configs):
 			error_message('Specified action for current module is not defined!')
 
 if __name__ == "__main__":
-	'''
 	if not isLinux():
 		error_message("Only for Linux!")
 	elif not isRoot():
 		error_message("Root access required! Login as root.")
 	else:
 		renameProcess('ahc')
-	'''
 	try:
 		Ahc()
 	except Exception, msg:
