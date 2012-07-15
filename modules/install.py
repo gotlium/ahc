@@ -17,6 +17,11 @@ class Install(object):
 		if cert.createDatabase():
 			info_message('"Apache SSL Certs Protection" was successfully installed.')
 
+	def bashrc(self):
+		configuration = getTemplate('bashrc')
+		backFile('/root/.bashrc')
+		putFile('/root/.bashrc', configuration)
+
 	def mysql(self):
 		mysql_config = self.base.mysql['config']
 		if not fileExists(mysql_config):

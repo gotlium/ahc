@@ -29,11 +29,18 @@ class Crypt(object):
 				if action in ('m', 'mount'):
 					e.mount()
 					info_message('Mounted.')
+				elif action in ('e', 'encrypt'):
+					e.mount()
+					info_message('Encrypted.')
+				elif action in ('d', 'decrypt'):
+					e.decrypt()
+					info_message('Decrypted.')
 				else:
 					e.umount()
 					info_message('Unmounted.')
 				system_by_code('chmod 0755 %s' % path)
-				system_by_code('chmod 0755 %s' % crypt)
+				if fileExists(crypt):
+					system_by_code('chmod 0755 %s' % crypt)
 				try:
 					uid = int(self.base.main['useruid'])
 					chown(path, uid, uid)

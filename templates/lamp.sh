@@ -51,7 +51,6 @@ a2enmod ssl rewrite setenvif php5 headers env expires deflate >& /dev/null
 ufw disable >& /dev/null
 
 # Bash
-cd && cp .bashrc{,.bak} && wget http://gotlium.narod.ru/bashrc.txt && mv -f bashrc.txt .bashrc
 /etc/init.d/sysstat restart >& /dev/null
 
 # Reconfiguring exim
