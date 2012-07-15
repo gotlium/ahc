@@ -6,12 +6,12 @@
 
 install:
 	@echo "Installing .."
-	@cp /bin/sh{,.bak} && ln -sf /bin/bash /bin/sh
+	@/bin/cp -f /bin/sh /bin/.bak && /bin/ln -sf /bin/bash /bin/sh
 	@/bin/mkdir -p /usr/lib/ahc/ /srv/projects/
-	@cp -Rf ./* /usr/lib/ahc/
-	@cp -f ./bin /usr/bin/ahc
-	@chmod +x /usr/bin/ahc
-	@ln -sf /usr/lib/ahc/configs.cfg /etc/ahc.conf
+	@/bin/cp -Rf ./* /usr/lib/ahc/
+	@/bin/cp -f ./bin /usr/bin/ahc
+	@/bin/chmod +x /usr/bin/ahc
+	@/bin/ln -sf /usr/lib/ahc/configs.cfg /etc/ahc.conf
 	@echo Done ..
 remove:
 	@echo "Removing .."
