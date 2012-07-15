@@ -2,6 +2,7 @@ Apache Host Control v.1.1(ENG)
 
     New features:
         Sendmail cap.
+        Git deployment.
 
     Apache:
         Ruby & Ruby on Rails.
@@ -46,6 +47,7 @@ Apache Host Control v.1.1(RUS)
 
     Новые возможности:
         Добавлена заглушка sendmail для локальной разработки.
+        Git deployment.
 
     Apache:
         Добавлена поддержка Ruby и Ruby on Rails.

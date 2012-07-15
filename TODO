@@ -1,5 +1,4 @@
 Nginx (ruby+ror).
-Git deployment module.
 If main domain was removed, sub domain can't be removed.
 List of all created websites/domains/ftp accounts.
 Options for real SSL certificates(apache & nginx).
