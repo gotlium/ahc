@@ -25,9 +25,13 @@ class EncFS(object):
 				os.makedirs(self.path, 0755)
 
 			if len(os.listdir(self.path)) > 0:
+				if fileExists(self.tempdir):
+					rmtree(self.tempdir)
 				os.mkdir(self.tempdir)
 				for f in os.listdir(self.path):
 					move(os.path.join(self.path, f), os.path.join(self.tempdir, f))
+				rmtree(self.path)
+				os.mkdir(self.path)
 
 			p1 = Popen([ECHO, "-e", "\"p\n%s\n\"" % \
 									self.password], stdout=PIPE)
@@ -64,3 +68,17 @@ class EncFS(object):
 
 	def umount(self):
 		system_by_code("%s -z -u %s 1> /dev/null" % (self.fusermount, self.path))
+
+	def decrypt(self):
+		out = system('mount|grep %s' % self.path)
+		if not out or not len(out):
+			self.mount()
+		if fileExists(self.tempdir):
+			rmtree(self.tempdir)
+		os.mkdir(self.tempdir)
+		for f in os.listdir(self.path):
+			move(os.path.join(self.path, f), os.path.join(self.tempdir, f))
+		self.umount()
+		rmtree(self.crypt)
+		for f in os.listdir(self.tempdir):
+			move(os.path.join(self.tempdir, f), os.path.join(self.path, f))
