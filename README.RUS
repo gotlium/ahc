@@ -118,12 +118,14 @@ FTP
 --------------------------------------------------------------
 # ahc -m ftp -a hostname -u user -p password
 # ahc -m ftp -a hostname -u user -p password -f folder
+# ahc -m ftp -a hostname
 # ahc -m ftp -d hostname
 
 --------------------------------------------------------------
 MySQL
 --------------------------------------------------------------
 # ahc -m mysql -a hostname -u user -p password
+# ahc -m mysql -a hostname
 # ahc -m mysql -d hostname -u user
 
 --------------------------------------------------------------
@@ -173,6 +175,7 @@ Bind9
 # ahc -m install -s nginx_proxy
 # ahc -m install -s certs
 # ahc -m install -s lighttpd
+# ahc -m install -s sendmail
 # ahc -m install -s all
 --------------------------------------------------------------
 
@@ -217,8 +220,8 @@ FTP флаги:
     -s = имя сервиса
 
 
-Флаги Apache:
-    -t = тип [php,python,django]
+Флаги Apache/Nginx-a:
+    -t = тип [php,python,django,ruby,ror]
     -a = добавить хост
     -d = удалить хост
     -e = активирова хост

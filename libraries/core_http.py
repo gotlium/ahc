@@ -8,7 +8,7 @@ from libraries.path import HostPath
 
 class CoreHttp(HostPath):
 
-	methods = ('add', 'delete', 'enable', 'disable')
+	methods = ('add', 'delete', 'enable', 'disable',)
 
 	def __init__(self, base, web_server='apache2'):
 		self.web_server = web_server
@@ -48,6 +48,8 @@ class CoreHttp(HostPath):
 		if self.type in ext.keys():
 			ext = ext[self.type]
 			index_file = '%s/index.%s' % (data['website_dir'], ext)
+		else:
+			error_message('Type not supported!')
 		self.project_root = data['website_dir']
 		config = {
 			'port': self.config['port'],
@@ -77,12 +79,16 @@ class CoreHttp(HostPath):
 		self.__setup_standard(host_name, data, files)
 
 	def _setup_ruby(self, host_name, data, files):
+		if self.web_server == 'nginx':
+			error_message('Type not supported!')
 		self.__setup_standard(host_name, data, files)
 
 	def _setup_python(self, host_name, data, files):
 		self.__setup_standard(host_name, data, files)
 
 	def _setup_ror(self, host_name, data, files):
+		if self.web_server == 'nginx':
+			error_message('Type not supported!')
 		self.project_root = data['website_dir']
 		bin = self.base.main['bin_rails']
 		config = {

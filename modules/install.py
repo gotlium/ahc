@@ -202,6 +202,21 @@ table=accounts usercolumn=username passwdcolumn=pass crypt=2\
 		service_restart(firewall_bin)
 		info_message('Firewall was successfully installed.')
 
+	def sendmail(self):
+		sendmail_bin = self.base.sendmail['bin']
+		if fileExists(sendmail_bin):
+			error_message('Sendmail already installed!')
+		template_config = {
+			'new_mail_path': self.base.sendmail['new_mail_path'],
+			'mail_path': self.base.sendmail['mail_path'],
+		}
+		configuration = getTemplate('sendmail') % template_config
+		putFile(sendmail_bin, configuration)
+		system_by_code('mkdir -p %s' % self.base.sendmail['new_mail_path'])
+		system_by_code('chmod 0777 -R %s' % self.base.sendmail['mail_path'])
+		system_by_code('chmod +x %s' % sendmail_bin)
+		info_message('Sendmail was successfully installed.')
+
 	def all(self):
 		not_callable = ('service', 'all', 'base', 'methods')
 		methods = [x for x in dir(self) if not x.startswith('__') and x not in not_callable]
