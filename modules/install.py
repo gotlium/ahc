@@ -2,6 +2,7 @@ __author__ = 'gotlium'
 
 import MySQLdb
 import getpass, pwd
+import os
 
 from libraries.helpers import *
 from libraries.apache import CertificateGenerator
@@ -17,10 +18,16 @@ class Install(object):
 		if cert.createDatabase():
 			info_message('"Apache SSL Certs Protection" was successfully installed.')
 
-	def bashrc(self):
-		configuration = getTemplate('bashrc')
-		backFile('/root/.bashrc')
-		putFile('/root/.bashrc', configuration)
+	def shell(self):
+		home = os.getenv('HOME')
+		if os.getenv('SHELL') == '/bin/bash':
+			configuration = getTemplate('bashrc')
+			filename = '%s/.bashrc' % home
+		else:
+			configuration = getTemplate('zshrc')
+			filename = '%s/.bashrc' % home
+		backFile(filename)
+		putFile(filename, configuration)
 
 	def mysql(self):
 		mysql_config = self.base.mysql['config']

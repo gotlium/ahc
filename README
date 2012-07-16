@@ -5,7 +5,7 @@ Package for control apache/nginx virtual hosts, mysql/ftp
 users, bind zones, apache clients certificates on
 developer/production web-hosts. Tested on
 Ubuntu/Debian Linux.
-Published under GNU GPL v.2 licence.
+Published under GNU GPL v.2.
 --------------------------------------------------------------
 
 ##############################################################
@@ -171,6 +171,7 @@ Service Installing
 # ahc -m install -s certs
 # ahc -m install -s lighttpd
 # ahc -m install -s sendmail
+# ahc -m install -s shell
 # ahc -m install -s all
 --------------------------------------------------------------
 
@@ -218,6 +219,6 @@ Apache/Nginx flags:
     -d = remove host
     -e = enable host
     -f = disable host
-	-o = static optimization(optional)
-	-x = enable host protection(optional)
-	-l = list available websites
+    -o = static optimization(optional)
+    -x = enable host protection(optional)
+    -l = list available websites

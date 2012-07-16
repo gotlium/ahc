@@ -187,6 +187,7 @@ Bind9
 # ahc -m install -s certs
 # ahc -m install -s lighttpd
 # ahc -m install -s sendmail
+# ahc -m install -s shell
 # ahc -m install -s all
 --------------------------------------------------------------
 
