@@ -43,9 +43,8 @@ class Ftp(HostPath):
 			error_message("Can't remove user config!")
 
 	def __getFolder(self, host_name):
-		data = self.getHostData(host_name)
+		data = self.getExistsHostData(host_name)
 		folder = data['domain_dir']
-		#todo: add django path
 		if self.base.options.disable: # where disable = folder
 			folder = self.base.options.disable
 		return folder

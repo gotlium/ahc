@@ -1,6 +1,3 @@
-FTP+GIT tests for all available hosts types.
-path.py refactoring(with django path support).
-lamp.sh: question about exim configuration.
 Nginx (Ruby+RoR).
 If main domain was removed, sub domain can't be removed.
 List of all created websites/domains/ftp accounts.
