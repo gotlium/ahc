@@ -1,5 +1,7 @@
 __author__ = 'gotlium'
 
+from os import chmod
+
 from libraries.core_http import CoreHttp
 from libraries.helpers import *
 from libraries.fs import *
@@ -35,7 +37,9 @@ socket=%(socket_path)s pidfile=%(pid_path)s >& /dev/null &',
 		config['command_to_run'] = cmd
 		init_file = '/etc/init.d/%s.init' % self.project_name
 		putFile(init_file, getTemplate('nginx-host-runner') % config)
-		system_by_code('chmod +x %s' % init_file)
+		#system_by_code('chmod +x %s' % init_file)
+		chmod(init_file, 0700)
+
 		self.__setActive(True)
 
 	def __delWebsiteRunner(self):

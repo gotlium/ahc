@@ -85,7 +85,8 @@ class Install(object):
 		ssl_file = self.base.apache2['ssl_file']
 		ssleay_config = self.base.main['ssleay_config']
 		if not fileExists(ssl_dir):
-			system_by_code('mkdir -p %s' % ssl_dir)
+			#system_by_code('mkdir -p %s' % ssl_dir)
+			os.makedirs(ssl_dir, 0755)
 		if fileExists(bin_make_ssl):
 			if fileExists(ssl_file):
 				error_message('SSL certificate already installed!')
@@ -102,7 +103,8 @@ class Install(object):
 		ssl_file_pem = self.base.nginx['ssl_file_pem']
 		ssl_file_key = self.base.nginx['ssl_file_key']
 		if not fileExists(ssl_dir):
-			system_by_code('mkdir -p %s' % ssl_dir)
+			#system_by_code('mkdir -p %s' % ssl_dir)
+			os.makedirs(ssl_dir, 0755)
 		if fileExists(ssl_file_pem) or fileExists(ssl_file_key):
 			error_message('SSL certificate already installed!')
 		ssl_conf = self.base.nginx['ssl_conf']
@@ -129,7 +131,9 @@ class Install(object):
 			password = self.base.mysql['password']
 
 		try:
-			db = MySQLdb.connection(self.base.mysql['host'], self.base.mysql['user'], password)
+			db = MySQLdb.connection(
+				self.base.mysql['host'], self.base.mysql['user'], password
+			)
 		except Exception, msg:
 			error_message(msg)
 
@@ -175,16 +179,15 @@ class Install(object):
 		configuration = getTemplate('vsftpd') % template_config
 		putFile(config, configuration)
 
-		putFile(pam_config, "\
-auth required pam_mysql.so user=%(db_user)s passwd=%(db_password)s host=127.0.0.1 db=%(db_name)s \
-table=accounts usercolumn=username passwdcolumn=pass crypt=2\n\
-account required pam_mysql.so user=%(db_user)s passwd=%(db_password)s host=127.0.0.1 db=%(db_name)s \
-table=accounts usercolumn=username passwdcolumn=pass crypt=2\
-		" % {'db_user': db_user, 'db_password': db_password, 'db_name': db_name})
+		pam_configuration = {
+			'db_user': db_user, 'db_password': db_password, 'db_name': db_name
+		}
+		putFile(pam_config, getTemplate('vsftpd-pam-auth') % pam_configuration)
 
 		user_config_dir = self.base.vsftpd['user_config_dir']
 		if not fileExists(user_config_dir):
-			system_by_code('mkdir -p %s' % user_config_dir)
+			#system_by_code('mkdir -p %s' % user_config_dir)
+			os.makedirs(user_config_dir, 0755)
 
 		service_restart(self.base.vsftpd['init'])
 		info_message('FTP config was installed.')
@@ -214,7 +217,8 @@ table=accounts usercolumn=username passwdcolumn=pass crypt=2\
 		if fileExists(firewall_bin):
 			error_message('Firewall already installed!')
 		system_by_code('cp templates/fw.conf %s' % firewall_bin)
-		system_by_code('chmod +x %s' % firewall_bin)
+		#system_by_code('chmod +x %s' % firewall_bin)
+		os.chmod(firewall_bin, 0700)
 		system_by_code('%s rc.fw defaults 1> /dev/null' % self.base.main['bin_update_rc_d'])
 		service_restart(firewall_bin)
 		info_message('Firewall was successfully installed.')
@@ -229,9 +233,11 @@ table=accounts usercolumn=username passwdcolumn=pass crypt=2\
 		}
 		configuration = getTemplate('sendmail') % template_config
 		putFile(sendmail_bin, configuration)
-		system_by_code('mkdir -p %s' % self.base.sendmail['new_mail_path'])
+		#system_by_code('mkdir -p %s' % self.base.sendmail['new_mail_path'])
+		os.makedirs(self.base.sendmail['new_mail_path'], 0755)
 		system_by_code('chmod 0777 -R %s' % self.base.sendmail['mail_path'])
-		system_by_code('chmod +x %s' % sendmail_bin)
+		#system_by_code('chmod +x %s' % sendmail_bin)
+		os.chmod(sendmail_bin, 0711)
 		info_message('Sendmail was successfully installed.')
 
 	def all(self):

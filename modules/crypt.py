@@ -2,7 +2,7 @@ __author__ = 'gotlium'
 
 from getpass import getpass
 from os.path import basename, dirname
-from os import chown
+from os import chown, chmod
 
 from libraries.encfs import EncFS
 from libraries.helpers import *
@@ -38,9 +38,11 @@ class Crypt(object):
 				else:
 					e.umount()
 					info_message('Unmounted.')
-				system_by_code('chmod 0755 %s' % path)
+				#system_by_code('chmod 0755 %s' % path)
+				chmod(path, 0755)
 				if fileExists(crypt):
-					system_by_code('chmod 0755 %s' % crypt)
+					#system_by_code('chmod 0755 %s' % crypt)
+					chmod(crypt, 0755)
 				try:
 					uid = int(self.base.main['useruid'])
 					chown(path, uid, uid)
