@@ -4,19 +4,25 @@
 # GoTLiuM InSPiRiT <gotlium@gmail.com>  #
 #########################################
 
+DESTDIR=
+BINDIR=$(DESTDIR)/usr/bin/
+ETCDIR=$(DESTDIR)/etc
+
 install:
 	@echo "Installing .."
+	@if [ ! -d $(BINDIR) ]; then mkdir -p $(BINDIR); fi
+	@if [ ! -d $(ETCDIR) ]; then mkdir -p $(ETCDIR); fi
 	@/bin/cp -f /bin/sh /bin/sh.bak && /bin/ln -sf /bin/bash /bin/sh
-	@/bin/mkdir -p /usr/lib/ahc/ /srv/projects/
-	@/bin/cp -Rf ./* /usr/lib/ahc/
-	@/bin/cp -f ./bin.sh /usr/bin/ahc
-	@/bin/chmod +x /usr/bin/ahc
-	@/bin/ln -sf /usr/lib/ahc/configs.cfg /etc/ahc.conf
+	@/bin/mkdir -p $(DESTDIR)/usr/lib/ahc/ $(DESTDIR)/srv/projects/
+	@/bin/cp -Rf ./* $(DESTDIR)/usr/lib/ahc/
+	@/bin/cp -f ./bin.sh $(BINDIR)ahc
+	@/bin/chmod +x $(BINDIR)ahc
+	@/bin/ln -sf /usr/lib/ahc/configs.cfg $(DESTDIR)/etc/ahc.conf
 	@echo "Done."
 remove:
 	@echo "Removing .."
-	@/bin/rm -rf /usr/lib/ahc/
-	@/bin/rm -f /usr/bin/ahc
-	@/bin/rm -f /etc/ahc.conf
+	@/bin/rm -rf $(DESTDIR)/usr/lib/ahc/
+	@/bin/rm -f $(BINDIR)/ahc
+	@/bin/rm -f $(DESTDIR)/etc/ahc.conf
 	@/bin/ln -sf /bin/dash /bin/sh
 	@echo "Done."

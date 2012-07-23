@@ -1,0 +1,8 @@
+Package: ahc
+Version: 1.1.0
+Architecture: all
+Maintainer: GoTLiuM InSPiRiT
+Depends: python-pip, python-mysqldb, python-pycurl, python-flup
+Priority: optional
+Description: Package for control apache/nginx virtual hosts, mysql/ftp users, bind zones, apache clients certificates on developer/production web-hosts. Tested on Ubuntu/Debian Linux. Published under GNU GPL v.2.
+

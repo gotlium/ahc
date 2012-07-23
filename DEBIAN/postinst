@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# GoTLiuM InSPiRiT <gotlium@gmail.com>
+
+case "$1" in
+install)
+	cd /usr/lib/ahc
+	pip install -r requirements.txt
+	;;
+esac

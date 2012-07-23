@@ -1,0 +1,15 @@
+#!/bin/bash
+
+PKGDIR="`pwd`"
+TMPDIR="/tmp/tempinstall"
+
+# fakeroot at first
+rm -rf ahc.deb
+chmod +x DEBIAN/postinst
+rm -rf $TMPDIR
+make install DESTDIR=$TMPDIR
+cd $TMPDIR
+mv usr/lib/ahc/DEBIAN $TMPDIR
+dpkg -b ./
+cp ..deb $PKGDIR/ahc.deb
+rm -rf usr/lib/.git
