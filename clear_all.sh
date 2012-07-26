@@ -17,19 +17,46 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-PKGDIR="`pwd`"
-TMPDIR="/tmp/tempinstall"
+clear
 
-if [ ! -z "$FAKEROOTKEY" ]; then
-	rm -rf ahc.deb
-	chmod +x DEBIAN/postinst
-	rm -rf $TMPDIR
-	make install DESTDIR=$TMPDIR
-	cd $TMPDIR
-	mv usr/lib/ahc/DEBIAN $TMPDIR
-	dpkg -b ./
-	cp ..deb $PKGDIR/ahc.deb
-	rm -rf usr/lib/.git
-else
-        echo "Run 'fakeroot' command! And after u can build deb package."
-fi
+read -p "Are you sure? [y/n] " yn
+case $yn in
+[Yy]* )
+	rm -rf /etc/apache2/sites-*/*
+	rm -rf /etc/nginx/sites-*/*
+	rm -rf /srv/projects/*
+	rm -rf /root/repositories/*
+	rm -rf /etc/rc*.d/*.init
+	rm -rf /etc/init.d/*.init
+	rm -rf /var/run/nginx/*
+	rm -f /usr/sbin/sendmail
+
+	read -s -p "Enter MySQL root password: " mysqlpasswd
+	if [ -z "$mysqlpasswd" ]; then
+		mysqlpasswd="password"
+	fi
+	mysql -p"$mysqlpasswd" -e 'DELETE FROM vsftpd.accounts;'
+	echo
+
+	killall -9 python >& /dev/null
+
+	/etc/init.d/apache2 stop
+	sleep 3
+	/etc/init.d/apache2 start
+
+	/etc/init.d/nginx stop
+	sleep 3
+	/etc/init.d/nginx start
+	sleep 3
+
+	find ./ \( -name '*.pyc' -or -name '*.pyo' \) -delete
+
+	reset
+;;
+[Nn]* )
+	exit
+;;
+* )
+	echo "Please answer yes or no."
+;;
+esac

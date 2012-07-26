@@ -44,7 +44,7 @@ class Mysql(object):
 			password = self.base.options.password
 		database = self.__getDbName(host_name)
 		try:
-			self.cursor.execute("CREATE DATABASE `%s`;" % database)
+			self.cursor.execute("CREATE DATABASE `%s` CHARACTER SET utf8 COLLATE utf8_general_ci;" % database)
 			self.cursor.execute(
 				"GRANT ALL ON %s.* TO '%s'@'%%' IDENTIFIED BY '%s';" % \
 					(database, login, password)

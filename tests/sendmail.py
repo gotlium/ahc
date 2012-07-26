@@ -9,8 +9,8 @@ class SendmailTestCase(TestCase):
 		execution_code = os.system('%s 1> /dev/null' % cmd)
 		self.assertEquals(execution_code, 0)
 
-	def test_a_install_domain(self):
+	def test_a_sendmail_install(self):
 		self.__exec('ahc -m install -s sendmail')
 
-	def test_b_sendmail_domain(self):
-		self.__exec('php -r \'mail("root@localhost", "test", "hello, world!");\'')
+	def test_b_sendmail_send(self):
+		self.__exec('/usr/bin/php -r \'mail("root@localhost", "test", "hello, world!");\'')

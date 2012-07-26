@@ -1,5 +1,6 @@
 __author__ = 'gotlium'
 
+from socket import gethostname
 import MySQLdb
 import getpass, pwd
 import os
@@ -12,6 +13,13 @@ class Install(object):
 	def __init__(self, base):
 		self.base = base
 		self.methods = ('service',)
+
+	def __getMySQLPassword(self):
+		if not self.base.mysql['password']:
+			password = getpass.getpass("Root password: ")
+		else:
+			password = self.base.mysql['password']
+		return password
 
 	def certs(self):
 		cert = CertificateGenerator(self.base)
@@ -32,6 +40,7 @@ class Install(object):
 		if fileExists(filename):
 			backFile(filename)
 		putFile(filename, configuration)
+		os.system('. %s' % filename)
 		info_message('Shell config for "%s" successfully installed.' % shell)
 
 	def mysql(self):
@@ -85,8 +94,7 @@ class Install(object):
 		ssl_file = self.base.apache2['ssl_file']
 		ssleay_config = self.base.main['ssleay_config']
 		if not fileExists(ssl_dir):
-			#system_by_code('mkdir -p %s' % ssl_dir)
-			os.makedirs(ssl_dir, 0755)
+			system_by_code('mkdir -p %s' % ssl_dir)
 		if fileExists(bin_make_ssl):
 			if fileExists(ssl_file):
 				error_message('SSL certificate already installed!')
@@ -103,8 +111,7 @@ class Install(object):
 		ssl_file_pem = self.base.nginx['ssl_file_pem']
 		ssl_file_key = self.base.nginx['ssl_file_key']
 		if not fileExists(ssl_dir):
-			#system_by_code('mkdir -p %s' % ssl_dir)
-			os.makedirs(ssl_dir, 0755)
+			system_by_code('mkdir -p %s' % ssl_dir)
 		if fileExists(ssl_file_pem) or fileExists(ssl_file_key):
 			error_message('SSL certificate already installed!')
 		ssl_conf = self.base.nginx['ssl_conf']
@@ -125,10 +132,7 @@ class Install(object):
 		if not fileExists(self.base.vsftpd['bin']):
 			error_message('Vsftpd not installed!')
 
-		if not self.base.mysql['password']:
-			password = getpass.getpass("Root password: ")
-		else:
-			password = self.base.mysql['password']
+		password = self.__getMySQLPassword()
 
 		try:
 			db = MySQLdb.connection(
@@ -186,8 +190,7 @@ class Install(object):
 
 		user_config_dir = self.base.vsftpd['user_config_dir']
 		if not fileExists(user_config_dir):
-			#system_by_code('mkdir -p %s' % user_config_dir)
-			os.makedirs(user_config_dir, 0755)
+			system_by_code('mkdir -p %s' % user_config_dir)
 
 		service_restart(self.base.vsftpd['init'])
 		info_message('FTP config was installed.')
@@ -217,8 +220,7 @@ class Install(object):
 		if fileExists(firewall_bin):
 			error_message('Firewall already installed!')
 		system_by_code('cp templates/fw.conf %s' % firewall_bin)
-		#system_by_code('chmod +x %s' % firewall_bin)
-		os.chmod(firewall_bin, 0700)
+		system_by_code('chmod +x %s' % firewall_bin)
 		system_by_code('%s rc.fw defaults 1> /dev/null' % self.base.main['bin_update_rc_d'])
 		service_restart(firewall_bin)
 		info_message('Firewall was successfully installed.')
@@ -233,11 +235,9 @@ class Install(object):
 		}
 		configuration = getTemplate('sendmail') % template_config
 		putFile(sendmail_bin, configuration)
-		#system_by_code('mkdir -p %s' % self.base.sendmail['new_mail_path'])
-		os.makedirs(self.base.sendmail['new_mail_path'], 0755)
+		system_by_code('mkdir -p %s' % self.base.sendmail['new_mail_path'])
 		system_by_code('chmod 0777 -R %s' % self.base.sendmail['mail_path'])
-		#system_by_code('chmod +x %s' % sendmail_bin)
-		os.chmod(sendmail_bin, 0711)
+		system_by_code('chmod 0777 %s' % sendmail_bin)
 		info_message('Sendmail was successfully installed.')
 
 	def all(self):
@@ -259,3 +259,101 @@ class Install(object):
 			method()
 		else:
 			error_message('Service do not supported!')
+
+	def mail(self):
+		password = self.__getMySQLPassword()
+
+		try:
+			db = MySQLdb.connection(
+				self.base.mysql['host'], self.base.mysql['user'], password
+			)
+		except Exception:
+			db = MySQLdb.connection(
+				self.base.mysql['host'], self.base.mysql['user'], ''
+			)
+		except Exception, msg:
+			error_message(msg)
+
+		db.query("SET PASSWORD FOR root@localhost=PASSWORD('');")
+
+		answer = raw_input('Clear all data if exists [y/N]? ')
+		if answer.lower() in ('y', 'yes'):
+			db.query("DROP DATABASE IF EXISTS amavisd;")
+			db.query("DROP DATABASE IF EXISTS cluebringer;")
+			db.query("DROP DATABASE IF EXISTS iredadmin;")
+			db.query("DROP DATABASE IF EXISTS roundcubemail;")
+			db.query("DROP DATABASE IF EXISTS vmail;")
+
+			system_by_code('rm -rf /etc/postfix/*.[0-9]*[0-9]*[0-9]*[0-9]*[0-9]*[0-9]')
+			system_by_code('rm -rf /etc/dovecot/*.[0-9]*[0-9]*[0-9]*[0-9]*[0-9]*[0-9]')
+			system_by_code('rm -rf /etc/spamassassin/*.[0-9]*[0-9]*[0-9]*[0-9]*[0-9]*[0-9]')
+			system_by_code(
+				'rm -rf %s/*/*.[0-9]*[0-9]*[0-9]*[0-9]*[0-9]*[0-9]' % self.base.apache2['etc']
+			)
+			system_by_code('rm -rf /usr/src/iRedMail-*')
+
+		db.close()
+
+		hostname = self.base.mail['hostname']
+		ip_address = '127.0.0.1'
+		putFile('/etc/hostname', hostname)
+		putFile('/etc/hosts', '%s\t%s\tmail' % (ip_address, hostname), 'a')
+		system_by_code('hostname %s' % hostname)
+
+		if gethostname() != hostname:
+			error_message("Can't set hostname!")
+
+		os.chdir('/usr/src/')
+		system_by_code('wget https://bitbucket.org/zhb/iredmail/downloads/iRedMail-0.8.1.tar.bz2')
+		system_by_code('tar jxvf iRedMail-0.8.1.tar.bz2')
+		os.chdir('/usr/src/iRedMail-0.8.1/pkgs/')
+		system_by_code('/bin/bash get_all.sh')
+		os.chdir('/usr/src/iRedMail-0.8.1/')
+
+		info_message('INSTRUCTION: ', 'cyan')
+		info_message('Default mail storage path: /var/vmail')
+		info_message('Backend for mail accounts: MySQL')
+		info_message('Disable DKIM signing/verification')
+		info_message('Disable AWSTATS')
+		info_message('Disable Fail2ban')
+		info_message('Disable firewall rules provided by iRedMail')
+
+		raw_input('Are you remember all? Press enter for next step.')
+
+		system_by_code('/bin/bash iRedMail.sh')
+
+		self.base.getPathAndChDir()
+
+		if not putFile(
+			'/etc/apache2/conf.d/iredadmin.conf',
+			getTemplate('mail-apache2-iredadmin')
+		):
+			error_message("Can't write apache2->iredadmin config!")
+
+		postfixConf = '/etc/postfix/main.cf'
+		comments = [
+			'content_filter', 'smtpd_end_of_data_restrictions',
+			'smtp-amavis_destination_recipient_limit',
+			'smtpd_recipient_restrictions', 'mailbox_size_limit'
+		]
+		postfix = getFile(postfixConf)
+		for comment in comments:
+			postfix = postfix.replace(comment, '# %s' % comment)
+		postfix += "\nsmtpd_recipient_restrictions = permit_mynetworks, reject_unauth_destination\n"
+		postfix += "\nmailbox_size_limit = 10240000\n"
+		if not putFile(postfixConf, postfix):
+			error_message("Can't write postfix config!")
+
+		system_by_code(
+			'rm -rf %s/*/*.[0-9]*[0-9]*[0-9]*[0-9]*[0-9]*[0-9]' % self.base.apache2['etc']
+		)
+
+		if fileExists(self.base.firewall['bin']):
+			system_by_code('%s restart' % self.base.firewall['bin'])
+
+		system_by_code('/etc/init.d/postfix restart >& /dev/null')
+		system_by_code('/etc/init.d/dovecot stop >& /dev/null')
+		system_by_code('/etc/init.d/dovecot start >& /dev/null')
+		system_by_code('%s restart >& /dev/null' % self.base.apache2['init'])
+
+		info_message('All basic config for working with mail is set.')

@@ -1,7 +1,5 @@
 __author__ = 'gotlium'
 
-from os import chmod, makedirs
-
 from libraries.path import HostPath
 from libraries.helpers import *
 
@@ -24,15 +22,13 @@ class Git(HostPath):
 
 		if fileExists(repository):
 			error_message('File exists! Enter another hostname, or remove old repository!')
-		#system_by_code('mkdir -p %s' % repository)
-		makedirs(repository, 0755)
+		system_by_code('mkdir -p %s' % repository)
 
 		system_by_code('cd %s && git init --bare 1> /dev/null' % repository)
 		system_by_code('cd %s && git init 1> /dev/null && git remote add origin %s' % (website_dir, repository))
 
 		putFile(post_receive, getTemplate('git-post-receive') % data)
-		#system_by_code('chmod +x %s' % post_receive)
-		chmod(post_receive, 0711)
+		system_by_code('chmod +x %s' % post_receive)
 
 		remote = "\tgit remote add origin ssh://root@%s%s"
 		info_message('*'*100, 'blue')

@@ -37,8 +37,7 @@ socket=%(socket_path)s pidfile=%(pid_path)s >& /dev/null &',
 		config['command_to_run'] = cmd
 		init_file = '/etc/init.d/%s.init' % self.project_name
 		putFile(init_file, getTemplate('nginx-host-runner') % config)
-		#system_by_code('chmod +x %s' % init_file)
-		chmod(init_file, 0700)
+		system_by_code('chmod +x %s' % init_file)
 
 		self.__setActive(True)
 
