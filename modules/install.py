@@ -344,6 +344,17 @@ class Install(object):
 		if not putFile(postfixConf, postfix):
 			error_message("Can't write postfix config!")
 
+		dovecotConf = '/etc/dovecot/dovecot.conf'
+		dovecot = getFile(dovecotConf)
+		dovecot = dovecot.replace(
+			'disable_plaintext_auth = yes', 'disable_plaintext_auth = no'
+		)
+		dovecot = dovecot.replace(
+			'ssl = required', 'ssl = yes'
+		)
+		if not putFile(dovecotConf, dovecot):
+			error_message("Can't write dovecot config!")
+
 		system_by_code(
 			'rm -rf %s/*/*.[0-9]*[0-9]*[0-9]*[0-9]*[0-9]*[0-9]' % self.base.apache2['etc']
 		)
