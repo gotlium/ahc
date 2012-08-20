@@ -25,6 +25,9 @@ class Git(HostPath):
 		system_by_code('mkdir -p %s' % repository)
 
 		system_by_code('cd %s && git init --bare 1> /dev/null' % repository)
+
+		if fileExists('%s/.git' % website_dir):
+			system_by_code('cd %s && git remote rm origin' % website_dir)
 		system_by_code('cd %s && git init 1> /dev/null && git remote add origin %s' % (website_dir, repository))
 
 		putFile(post_receive, getTemplate('git-post-receive') % data)

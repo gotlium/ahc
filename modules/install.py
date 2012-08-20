@@ -368,3 +368,20 @@ class Install(object):
 		system_by_code('%s restart >& /dev/null' % self.base.apache2['init'])
 
 		info_message('All basic config for working with mail is set.')
+
+	def vpn(self):
+		pass
+		'''
+		config to /etc/openvpn/server.conf
+		cd  /usr/share/doc/openvpn/examples/easy-rsa/2.0
+		bash
+		. ./vars
+		./clean-all
+		./build-ca
+		./build-key-server server
+		./build-dh
+		cp ca.crt /etc/openvpn/ca.crt
+		cp server.crt /etc/openvpn/server.crt
+		cp dh1024.pem /etc/openvpn/dh1024.pem
+		cp server.key /etc/openvpn/server.key
+		'''

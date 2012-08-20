@@ -1,3 +1,15 @@
+Apache Host Control v.1.2(ENG)
+
+    New features:
+        iRedMail Support
+        Makedeb functionality
+        Zsh support
+
+    Fixes:
+        FTP & GIT path fixes
+        Fixes on django name of project (numerical symbols)
+
+
 Apache Host Control v.1.1(ENG)
 
     New features:
@@ -41,6 +53,17 @@ Apache Host Control v.1.0(ENG)
 
 
 ########################################################################################################################
+
+
+Apache Host Control v.1.2(RUS)
+
+    Новые возможности:
+        Установка почтового сервера
+        Функциональность по созданию deb пакета
+        Поддержка настроек zsh
+
+    Исправления:
+        FTP & GIT исправление путей
 
 
 Apache Host Control v.1.1(RUS)

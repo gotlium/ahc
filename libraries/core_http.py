@@ -1,6 +1,7 @@
 __author__ = 'gotlium'
 
 import os
+import re
 
 from libraries.helpers import *
 from libraries.fs import *
@@ -118,7 +119,9 @@ class CoreHttp(HostPath):
 
 	def _setup_django(self, host_name, data, files):
 		project = host_name.replace('.', '_')
+		project = re.sub('([^a-z_])+', '', project)
 		project_root = '%s/%s' % (self.base.main['projects_directory'], project)
+		project_root = re.sub('([^a-z_])+', '', project_root)
 		self.project_root = project_root
 		bin = self.base.main['bin_django_admin']
 		config = {

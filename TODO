@@ -1,4 +1,6 @@
-Postfix+Dovecot.
+OpenVPN configuration
+Sphinx(check mysql db exists at first. use by default /etc/sphinxsearch/sphinx.conf)
+Django / Need to fix project name if in domain numeric character exists.
 Nginx (Ruby+RoR).
 If main domain was removed, sub domain can't be removed.
 List of all created websites/domains/ftp accounts.
