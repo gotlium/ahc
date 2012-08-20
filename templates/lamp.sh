@@ -25,7 +25,7 @@ ssh gcc g++ make tcpdump bash-completion ftp vpnc pkg-config devscripts \
 unrar-free p7zip-full fail2ban subversion sqlite3 wget rsync nano zip unzip \
 iptables xtables-addons-common shtool memcached locate mysql-server mysql-client \
 exim4-config sphinxsearch redis-server python-django php5-fpm libpam-ldap \
-libapache2-mod-ruby libapache2-mod-passenger encfs
+libapache2-mod-ruby libapache2-mod-passenger encfs screen
 
 echo 'packages installed.'
 sleep 3
@@ -62,3 +62,12 @@ echo '<Directory ~ "\.git">' >> /etc/apache2/apache2.conf
 echo '        Order allow,deny' >> /etc/apache2/apache2.conf
 echo '        Deny from all' >> /etc/apache2/apache2.conf
 echo '</Directory>' >> /etc/apache2/apache2.conf
+
+echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf
+echo 'net.ipv6.conf.default.disable_ipv6 = 1' >> /etc/sysctl.conf
+echo 'net.ipv6.conf.lo.disable_ipv6 = 1' >> /etc/sysctl.conf
+
+sysctl -p >& /dev/null
+
+#http://security.ubuntu.com/ubuntu/pool/main/v/vsftpd/vsftpd_2.3.2-3ubuntu4.1_i386.deb
+#http://security.ubuntu.com/ubuntu/pool/main/v/vsftpd/vsftpd_2.3.2-3ubuntu4.1_amd64.deb

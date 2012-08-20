@@ -121,7 +121,7 @@ class CoreHttp(HostPath):
 		project = host_name.replace('.', '_')
 		project = re.sub('([^a-z_])+', '', project)
 		project_root = '%s/%s' % (self.base.main['projects_directory'], project)
-		project_root = re.sub('([^a-z_])+', '', project_root)
+		project_root = re.sub('([^a-z_\/])+', '', project_root)
 		self.project_root = project_root
 		bin = self.base.main['bin_django_admin']
 		config = {
