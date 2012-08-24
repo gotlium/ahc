@@ -24,7 +24,11 @@ class CoreHttp(HostPath):
 		return find_method
 
 	def __getTemplate(self, template, ext='conf'):
-		return getFile('templates/%s-%s.%s' % (self.web_server, template, ext))
+		prefix = ""
+		if self.base.options.wsgi:
+			prefix = "-wsgi"
+		return getFile('templates/%s-%s%s.%s' % \
+					   (self.web_server, template, prefix, ext))
 
 	def __optimizationTemplate(self):
 		if self.base.options.optimize and self.web_server == 'apache2':
@@ -119,9 +123,10 @@ class CoreHttp(HostPath):
 
 	def _setup_django(self, host_name, data, files):
 		project = host_name.replace('.', '_')
-		project = re.sub('([^a-z_])+', '', project)
+		project = re.sub('([^a-z0-9_])+', '', project)
 		project_root = '%s/%s' % (self.base.main['projects_directory'], project)
-		project_root = re.sub('([^a-z_\/])+', '', project_root)
+		project_root = re.sub('([^a-z0-9_\/])+', '', project_root)
+
 		self.project_root = project_root
 		bin = self.base.main['bin_django_admin']
 		config = {

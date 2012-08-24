@@ -47,6 +47,10 @@ class Git(HostPath):
 		info_message('OR', 'yellow')
 		info_message(remote % (host_name, repository))
 		info_message('*'*100, 'blue')
+		info_message('Create ".git/hooks/post-commit" in your local repository with code below:', 'white')
+		info_message('#!/bin/sh')
+		info_message('git push origin master')
+		info_message('*'*100, 'blue')
 
 	def delete(self, host_name):
 		data = self.getExistsHostData(host_name)

@@ -53,6 +53,7 @@ class HostPath(object):
 			if not fileExists(data[key]):
 				if not data['is_subdomain']:
 					domain_dir = data[key].replace('.', '_')
+					domain_dir = re.sub('([^a-z0-9_\/])+', '', domain_dir)
 					if not fileExists(domain_dir):
 						raise Exception('Project not exists!')
 					data[key] = domain_dir

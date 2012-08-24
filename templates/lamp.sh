@@ -25,7 +25,8 @@ ssh gcc g++ make tcpdump bash-completion ftp vpnc pkg-config devscripts \
 unrar-free p7zip-full fail2ban subversion sqlite3 wget rsync nano zip unzip \
 iptables xtables-addons-common shtool memcached locate mysql-server mysql-client \
 exim4-config sphinxsearch redis-server python-django php5-fpm libpam-ldap \
-libapache2-mod-ruby libapache2-mod-passenger encfs screen
+libapache2-mod-ruby libapache2-mod-passenger encfs screen python-redis python-imaging \
+python-dev libxml2-dev libxslt-dev libapache2-mod-wsgi
 
 echo 'packages installed.'
 sleep 3
