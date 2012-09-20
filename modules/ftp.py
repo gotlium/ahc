@@ -2,6 +2,7 @@ __author__ = 'gotlium'
 
 import MySQLdb
 
+from libraries.password import random_password
 from libraries.helpers import *
 from libraries.fs import *
 from libraries.path import HostPath
@@ -43,10 +44,11 @@ class Ftp(HostPath):
 			error_message("Can't remove user config!")
 
 	def __getFolder(self, host_name):
-		data = self.getExistsHostData(host_name)
-		folder = data['domain_dir']
 		if self.base.options.disable: # where disable = folder
 			folder = self.base.options.disable
+		else:
+			data = self.getExistsHostData(host_name)
+			folder = data['domain_dir']
 		return folder
 
 
@@ -59,7 +61,8 @@ class Ftp(HostPath):
 			login = self.base.options.user
 		if self.base.options.password:
 			password = self.base.options.password
-
+			if password == 'random':
+				password = random_password()
 		if fileExists(folder):
 			if not self.__userExists(login):
 				self.cursor.execute(

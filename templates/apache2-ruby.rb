@@ -1,1 +1,1 @@
-puts '<b>Ruby:Hello, World!</b>';
+puts 'Ruby:Hello, World!';

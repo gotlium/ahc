@@ -4,10 +4,13 @@ Apache Host Control v.1.2(ENG)
         iRedMail Support
         Makedeb functionality
         Zsh support
+        Apache / WSGI(Python,Django)
+        Nginx / uWSGI(Python,Django)
+        MySQL,FTP / Random password
 
     Fixes:
         FTP & GIT path fixes
-        Fixes on django name of project (numerical symbols)
+        Fixes on django name of project (numerical & another bad symbols)
 
 
 Apache Host Control v.1.1(ENG)
@@ -61,6 +64,9 @@ Apache Host Control v.1.2(RUS)
         Установка почтового сервера
         Функциональность по созданию deb пакета
         Поддержка настроек zsh
+        Поддержка Apache / WSGI(для Python,Django)
+        Поддержка Nginx / uWSGI(для Python,Django)
+        MySQL,FTP / Случайный пароль
 
     Исправления:
         FTP & GIT исправление путей

@@ -124,6 +124,7 @@ Nginx
 FTP
 --------------------------------------------------------------
 # ahc -m ftp -a hostname -u user -p password
+# ahc -m ftp -a hostname -u user -p random
 # ahc -m ftp -a hostname -u user -p password -f folder
 # ahc -m ftp -a hostname
 # ahc -m ftp -d hostname
@@ -132,6 +133,7 @@ FTP
 MySQL
 --------------------------------------------------------------
 # ahc -m mysql -a hostname -u user -p password
+# ahc -m mysql -a hostname -u user -p random
 # ahc -m mysql -a hostname
 # ahc -m mysql -d hostname -u user
 
@@ -242,3 +244,16 @@ FTP флаги:
 	-o = добавить директивы для оптимизации статики(необязательно)
 	-x = включить SSL защиту(необязательно)
 	-l = показать список доступных хостов
+    -w = wsgi/uwsgi конфиг для python или django
+
+********************************************************************************
+
+Сейчас из коробки поддерживается vsftpd версий <= 2.3.2. Так как в версиях
+> 2.3.2 - ужесточили политику безопасности.
+?: При входе пользователем на FTP-Server версии 2.3.5 выдается сообщение:
+"500 OOPS: vsftpd: refusing to run with writable root inside chroot()".
+Всё верно, в 2.3.5 ужесточены правила безопасности. Теперь сервер не делает
+chroot() в домашний каталог пользователя, если на него стоят права на запись.
+Данное ограничение можно обойти путем установки расширенной версии 2.3.5 с
+заданием в файле настроек опции allow_writable_root, либо установить 3.0.0 и
+изменить значение опции allow_writable_chroot конфигурационного файла.

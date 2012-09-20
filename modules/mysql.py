@@ -3,6 +3,7 @@ __author__ = 'gotlium'
 import MySQLdb
 import getpass
 
+from libraries.password import random_password
 from libraries.helpers import *
 
 class Mysql(object):
@@ -42,6 +43,8 @@ class Mysql(object):
 		password = host_name
 		if self.base.options.password:
 			password = self.base.options.password
+			if password == 'random':
+				password = random_password()
 		database = self.__getDbName(host_name)
 		try:
 			self.cursor.execute("CREATE DATABASE `%s` CHARACTER SET utf8 COLLATE utf8_general_ci;" % database)

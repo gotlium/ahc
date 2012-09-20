@@ -24,11 +24,14 @@ class CoreHttp(HostPath):
 		return find_method
 
 	def __getTemplate(self, template, ext='conf'):
-		prefix = ""
 		if self.base.options.wsgi:
-			prefix = "-wsgi"
-		return getFile('templates/%s-%s%s.%s' % \
-					   (self.web_server, template, prefix, ext))
+			filename = 'templates/%s-%s-wsgi.%s' % \
+					   (self.web_server, template, ext)
+			if not fileExists(filename):
+				error_message('WSGI not supported for current type!')
+			return getFile(filename)
+		return getFile('templates/%s-%s.%s' % \
+					   (self.web_server, template, ext))
 
 	def __optimizationTemplate(self):
 		if self.base.options.optimize and self.web_server == 'apache2':
@@ -122,10 +125,15 @@ class CoreHttp(HostPath):
 			error_message("Can't change permissions to directory!")
 
 	def _setup_django(self, host_name, data, files):
-		project = host_name.replace('.', '_')
+		project = host_name.replace('.', '_').replace('-', '_')
 		project = re.sub('([^a-z0-9_])+', '', project)
+		project = '_%s' % project if project[0].isdigit() else project
+
 		project_root = '%s/%s' % (self.base.main['projects_directory'], project)
 		project_root = re.sub('([^a-z0-9_\/])+', '', project_root)
+
+		if fileExists(project_root):
+			error_message('Website already exists!')
 
 		self.project_root = project_root
 		bin = self.base.main['bin_django_admin']
@@ -152,6 +160,7 @@ class CoreHttp(HostPath):
 		try:
 			uid = int(self.base.main['useruid'])
 			os.chown(project_root, uid, uid)
+			#system_by_code('chown %d:%d %s/* -R' % (uid,uid,project_root))
 		except Exception:
 			error_message("Can't change permissions to directory!")
 

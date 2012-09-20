@@ -29,7 +29,11 @@ case $yn in
 	rm -rf /etc/rc*.d/*.init
 	rm -rf /etc/init.d/*.init
 	rm -rf /var/run/nginx/*
+	rm -rf /etc/uwsgi/apps-*/*
 	rm -f /usr/sbin/sendmail
+	rm /var/log/uwsgi/app/*
+	killall -9 uwsgi-core >& /dev/null
+	killall -9 uwsgi >& /dev/null
 
 	read -s -p "Enter MySQL root password: " mysqlpasswd
 	if [ -z "$mysqlpasswd" ]; then

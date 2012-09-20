@@ -114,6 +114,7 @@ Nginx
 FTP
 --------------------------------------------------------------
 # ahc -m ftp -a hostname -u user -p password
+# ahc -m ftp -a hostname -u user -p random
 # ahc -m ftp -a hostname -u user -p password -f folder
 # ahc -m ftp -a hostname
 # ahc -m ftp -d hostname
@@ -122,6 +123,7 @@ FTP
 MySQL
 --------------------------------------------------------------
 # ahc -m mysql -a hostname -u user -p password
+# ahc -m mysql -a hostname -u user -p random
 # ahc -m mysql -a hostname
 # ahc -m mysql -d hostname -u user
 
@@ -229,3 +231,4 @@ Apache/Nginx flags:
     -o = static optimization(optional)
     -x = enable host protection(optional)
     -l = list available websites
+    -w = wsgi config for python OR django

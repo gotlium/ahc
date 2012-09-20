@@ -11,6 +11,7 @@ class ApacheTestCase(CoreHttpTestCase):
 	ror_domain = 'ror.dev'
 	ror_sub_domain = 'sub.ror.dev'
 
+	'''
 	def test_a_add_ruby_host(self):
 		self._addHost('ruby', self.ruby_domain)
 		self._checkHostFound(self.ruby_domain, 'Ruby:Hello')
@@ -81,6 +82,8 @@ class ApacheTestCase(CoreHttpTestCase):
 	def test_h_remove_ror_host(self):
 		self._delHost('ror', self.ror_domain)
 		self._checkHostNotFound(self.ror_domain)
+	'''
+
 
 	'''
 	def test_f_add_php_host_with_protection(self):
