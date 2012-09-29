@@ -304,11 +304,11 @@ class Install(object):
 			error_message("Can't set hostname!")
 
 		os.chdir('/usr/src/')
-		system_by_code('wget https://bitbucket.org/zhb/iredmail/downloads/iRedMail-0.8.1.tar.bz2')
-		system_by_code('tar jxvf iRedMail-0.8.1.tar.bz2')
-		os.chdir('/usr/src/iRedMail-0.8.1/pkgs/')
+		system_by_code('wget https://bitbucket.org/zhb/iredmail/downloads/iRedMail-0.8.2.tar.bz2')
+		system_by_code('tar jxvf iRedMail-0.8.2.tar.bz2')
+		os.chdir('/usr/src/iRedMail-0.8.2/pkgs/')
 		system_by_code('/bin/bash get_all.sh')
-		os.chdir('/usr/src/iRedMail-0.8.1/')
+		os.chdir('/usr/src/iRedMail-0.8.2/')
 
 		info_message('INSTRUCTION: ', 'cyan')
 		info_message('Default mail storage path: /var/vmail')
