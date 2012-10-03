@@ -2,10 +2,14 @@ Before release:
     FTP fixes for version 2.3.5
     Ruby fixes
 
+Current:
+    Nginx (Ruby+RoR).
+    GitLab support
+    Confluence
+
 Sometime:
     OpenVPN configuration
     Sphinx(check mysql db exists at first. use by default /etc/sphinxsearch/sphinx.conf)
-    Nginx (Ruby+RoR).
     If main domain was removed, sub domain can't be removed.
     List of all created websites/domains/ftp accounts.
     Options for real SSL certificates(apache & nginx).

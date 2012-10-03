@@ -260,6 +260,64 @@ class Install(object):
 		else:
 			error_message('Service do not supported!')
 
+	def jira(self):
+		domain = None
+		ip = None
+
+		if fileExists(self.base.apache2['sites_available'] + '/jira.conf'):
+			error_message('Jira was installed!')
+
+		for i in range(3):
+			input = raw_input('Enter basic domain name: ')
+			if isValidHostname(input):
+				domain = input
+				break
+		if not domain:
+			error_message('Domain name is not valid!')
+
+		for i in range(3):
+			input = raw_input('Enter server external ip-address: ')
+			if isValidIp(input):
+				ip = input
+				break
+		if not ip:
+			error_message('IP-address is not valid!')
+
+		conf = {
+			'domain': domain,
+			'ip': ip,
+			'port': self.base.apache2['port']
+		}
+
+		info_message("Use the following port 8000 in Jira.", 'cyan')
+
+		template = getTemplate('apache2-jira') % conf
+		system_by_code('%s proxy >& /dev/null' % self.base.apache2['bin_a2enmod'])
+		system_by_code('%s proxy_http >& /dev/null' % self.base.apache2['bin_a2enmod'])
+		os.chdir('/usr/src/')
+
+		system_by_code('wget http://www.atlassian.com/software/jira/downloads'
+						'/binary/atlassian-jira-5.1.6-x64.bin')
+		system_by_code('chmod +x atlassian-jira-5.1.6-x64.bin')
+		os.system('./atlassian-jira-5.1.6-x64.bin')
+
+		putFile(
+			self.base.apache2['sites_available'] + '/jira.conf', template
+		)
+		system_by_code(
+			'%s jira.conf >& /dev/null' % self.base.apache2['bin_a2ensite']
+		)
+		service_restart(
+			self.base.apache2['init'], 'reload'
+		)
+		system_by_code('ahc -m bind -a %(domain)s -i %(ip)s >& /dev/null' % \
+					   conf)
+
+		info_message("Use this credentials, on Jira installation interface:")
+		system_by_code('ahc -m mysql -a jira -u jira -p random')
+
+		info_message("Access to Jira: http://jira.%(domain)s/" % conf)
+
 	def mail(self):
 		password = self.__getMySQLPassword()
 
