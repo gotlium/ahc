@@ -181,6 +181,7 @@ Service Installing
 # ahc -m install -s sendmail
 # ahc -m install -s mail
 # ahc -m install -s shell
+# ahc -m install -s jira
 # ahc -m install -s all
 --------------------------------------------------------------
 
