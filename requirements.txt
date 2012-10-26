@@ -2,3 +2,4 @@ MySQL-python
 flup
 human_curl
 pycurl
+pexpect

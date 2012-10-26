@@ -47,7 +47,10 @@ class Host(DatesModel):
 		default='default')
 	static = models.BooleanField('Static tune', default=True)
 	git = models.BooleanField('GIT repository', default=True)
-	status = models.BooleanField('availability status', default = True, db_index=True)
+	username = models.CharField('Login', blank=True, max_length=16)
+	password = models.CharField('Password', blank=True, max_length=16)
+	status = models.BooleanField('availability status', default = True,
+		db_index=True)
 
 	class Meta:
 		verbose_name = 'Host'

@@ -10,6 +10,8 @@ def host_after_add(sender, instance, created, **kwargs):
 		)
 		if instance.static:
 			cmd += ' -o'
+		if instance.username and instance.password:
+			cmd += ' -b %s:%s' % (instance.username, instance.password)
 		os.system(cmd)
 
 		if instance.git:

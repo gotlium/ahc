@@ -2,6 +2,7 @@ __author__ = 'gotlium'
 
 import os
 import re
+import crypt
 
 from libraries.helpers import *
 from libraries.fs import *
@@ -18,10 +19,30 @@ class CoreHttp(HostPath):
 		self.config = base.__getattribute__(self.web_server)
 		checkInstall(self.config)
 
+
 	def __getattr__(self, method):
 		def find_method(*args, **kwargs):
 			getattr(self, '_%s' % method)(*args, **kwargs)
 		return find_method
+
+	def __createBasicAuthFile(self, filename, user, password):
+		user = user.strip()
+		password = password.strip()
+		return putFile(filename, "%s:%s" % (user, crypt.crypt(password,
+			password)))
+
+	def __authTemplate(self, project_root):
+		filename = '%s/.htpasswd' % self.project_root
+		if self.base.options.auth:
+			login, password = self.base.options.auth.split(':')
+			if self.__createBasicAuthFile(filename, login, password):
+				if self.web_server == 'nginx':
+					return getTemplate('nginx-auth') % {'filename': filename}
+				else:
+					return getTemplate('apache2-auth') % {'filename': filename}
+			else:
+				info_message('Warning: Password not created!', 'white')
+		return ""
 
 	def __getTemplate(self, template, ext='conf'):
 		if self.base.options.wsgi:
@@ -66,7 +87,8 @@ class CoreHttp(HostPath):
 			'ssl_section': '',
 			'optimize': self.__optimizationTemplate(),
 			'socket_path': self.socket_path,
-			'pid_path': self.pid_path
+			'pid_path': self.pid_path,
+			'basic_auth': self.__authTemplate(self.project_root)
 		}
 		if fileExists(files['host_file']):
 			error_message('Host "%s" file is used!' % files['host_file'])
@@ -107,7 +129,8 @@ class CoreHttp(HostPath):
 			'projects_dir': self.base.main['projects_directory'],
 			'optimize': self.__optimizationTemplate(),
 			'socket_path': self.socket_path,
-			'pid_path': self.pid_path
+			'pid_path': self.pid_path,
+			'basic_auth': self.__authTemplate(self.project_root)
 		}
 
 		if not putFile(files['host_file'], self.__getTemplate(self.type) % config):
@@ -137,6 +160,10 @@ class CoreHttp(HostPath):
 
 		self.project_root = project_root
 		bin = self.base.main['bin_django_admin']
+
+		system_by_code('cd %s && %s startproject %s && cd %s && ln -s ./ www' %\
+					   (self.base.main['projects_directory'], bin, project, project))
+
 		config = {
 			'port': self.config['port'],
 			'hostname': host_name,
@@ -146,8 +173,10 @@ class CoreHttp(HostPath):
 			'projects_dir': self.base.main['projects_directory'],
 			'optimize': self.__optimizationTemplate(),
 			'socket_path': self.socket_path,
-			'pid_path': self.pid_path
+			'pid_path': self.pid_path,
+			'basic_auth': self.__authTemplate(project_root)
 		}
+
 		if not putFile(files['host_file'], self.__getTemplate(self.type) % config):
 			system_by_code("Error, when trying to save host file!")
 		if int(self.base.main['use_ssl']) == 1:
@@ -155,8 +184,6 @@ class CoreHttp(HostPath):
 			config['ssl_section'] = self.ssl_template
 			if not putFile(files['ssl_host_file'], self.__getTemplate(self.type) % config):
 				system_by_code("Error, when trying to save example file!")
-		system_by_code('cd %s && %s startproject %s && cd %s && ln -s ./ www' %\
-					   (self.base.main['projects_directory'], bin, project, project))
 		try:
 			uid = int(self.base.main['useruid'])
 			os.chown(project_root, uid, uid)

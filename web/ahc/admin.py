@@ -32,6 +32,10 @@ class HostAdmin(admin.ModelAdmin):
 			'name'
 		],
 		}),
+		('Auth', {'fields': [
+			'username', 'password'
+		],
+		}),
 		('WebServer', {'fields': [
 			'server',
 			'server_type',
@@ -61,10 +65,10 @@ class HostAdmin(admin.ModelAdmin):
 
 	def get_readonly_fields(self, request, obj=None):
 		if obj is not None:
-			return self.readonly_fields + ('name','server',
-										   'server_type',
-										   'server_module',
-										   'static',)
+			return self.readonly_fields + (
+				'name','server', 'server_type', 'server_module',
+				'static', 'username', 'password',
+			)
 		return self.readonly_fields
 
 

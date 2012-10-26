@@ -56,6 +56,8 @@ class Ahc(Configs):
 		parser.add_option("-l", "--list", action="store_true", dest="list")
 		parser.add_option("-y", "--yes", action="store_true", dest="yes")
 		parser.add_option("-w", "--wsgi", action="store_true", dest="wsgi")
+		parser.add_option("-b", "--basic-auth", dest="auth",
+			metavar="USER:PASS")
 		try:
 			(self.options, args) = self.parser.parse_args()
 		except Exception, msg:
