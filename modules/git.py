@@ -59,6 +59,8 @@ class Git(HostPath):
 
 		if fileExists(repository):
 			system_by_code('rm -rf %s' % repository)
-		system_by_code('cd %s && git remote rm origin' % website_dir)
+
+		if fileExists('%s/.git' % website_dir):
+			system_by_code('cd %s && git remote rm origin' % website_dir)
 
 		info_message('Successful!')

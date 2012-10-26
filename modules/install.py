@@ -487,6 +487,62 @@ class Install(object):
 
 		info_message('All basic config for working with mail is set.')
 
+	def web(self):
+		configuration = getTemplate('web-runner')
+		init = '/etc/init.d/ahc-web'
+
+		if fileExists(init):
+			error_message('Web application already installed.')
+
+		putFile(init, configuration)
+		os.system('chmod +x %s' % init)
+		os.system('update-rc.d ahc-web defaults >& /dev/null')
+		os.system('%s start' % init)
+
+
+		for i in range(3):
+			input = raw_input('Enter basic domain name: ')
+			if isValidHostname(input):
+				domain = input
+				break
+		if not domain:
+			error_message('Domain name is not valid!')
+
+		for i in range(3):
+			input = raw_input('Enter server external ip-address: ')
+			if isValidIp(input):
+				ip = input
+				break
+		if not ip:
+			error_message('IP-address is not valid!')
+
+		conf = {
+			'domain': domain,
+			'ip': ip,
+			'port': self.base.apache2['port']
+		}
+
+		template = getTemplate('web-apache') % conf
+		system_by_code('%s proxy >& /dev/null' % self.base.apache2['bin_a2enmod'])
+		system_by_code('%s proxy_http >& /dev/null' % self.base.apache2['bin_a2enmod'])
+
+		putFile(
+			self.base.apache2['sites_available'] + '/ahc-web.conf', template
+		)
+		system_by_code(
+			'%s ahc-web.conf >& /dev/null' % self.base.apache2['bin_a2ensite']
+		)
+		service_restart(
+			self.base.apache2['init'], 'restart'
+		)
+		system_by_code('ahc -m bind -a ahc.%(domain)s -i %(ip)s >& '
+					   '/dev/null' % conf)
+
+		hosts('add', "ahc.%(domain)s" % conf)
+		info_message("Access to ahc: http://ahc.%(domain)s/" % conf)
+
+		info_message('Web application was successfully installed.')
+
 	def vpn(self):
 		pass
 		'''

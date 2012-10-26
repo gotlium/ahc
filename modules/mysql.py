@@ -56,6 +56,10 @@ class Mysql(object):
 				"GRANT ALL ON %s.* TO '%s'@'127.0.0.1' IDENTIFIED BY '%s';" % \
 					(database, login, password)
 			)
+			self.cursor.execute(
+				"GRANT ALL ON %s.* TO '%s'@'localhost' IDENTIFIED BY '%s';" %\
+				(database, login, password)
+			)
 			self.cursor.execute('FLUSH PRIVILEGES;')
 		except Exception, msg:
 			error_message(msg)
@@ -70,9 +74,29 @@ class Mysql(object):
 		login = self.__getLogin(host_name)
 
 		try:
-			self.cursor.execute("DROP USER '%s'@'%%';" % login)
+			self.cursor.execute(
+				"REVOKE ALL ON %s.* FROM '%s'@'%%';" %\
+				(database, login)
+			)
+			self.cursor.execute(
+				"REVOKE ALL ON %s.* FROM '%s'@'127.0.0.1';" %\
+				(database, login)
+			)
+			self.cursor.execute(
+				"REVOKE ALL ON %s.* FROM '%s'@'localhost';" %\
+				(database, login)
+			)
 			self.cursor.execute('FLUSH PRIVILEGES;')
-		except Exception:
+
+			self.cursor.execute("SHOW GRANTS FOR '%s'@'%%';" % login)
+			rows = self.cursor.fetchall()
+			if len(rows) < 2:
+				self.cursor.execute("DROP USER '%s'@'%%';" % login)
+				self.cursor.execute("DROP USER '%s'@'127.0.0.1';" % login)
+				self.cursor.execute("DROP USER '%s'@'localhost';" % login)
+				self.cursor.execute('FLUSH PRIVILEGES;')
+		except Exception, msg:
+			print msg
 			error_message("User not found!")
 
 		if self.base.options.yes:

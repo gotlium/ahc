@@ -76,7 +76,7 @@ def renameProcess(name, libc = None):
 		pass
 	return False
 
-def hosts(action = 'add', host = None, filename = '/etc/hosts'):
+def hosts(action='add', host=None, filename='/etc/hosts'):
 	if host and fileExists(filename):
 		new_data = ''
 		for line in getFileArr(filename):

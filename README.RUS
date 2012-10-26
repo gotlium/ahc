@@ -192,6 +192,7 @@ Bind9
 # ahc -m install -s shell
 # ahc -m install -s mail
 # ahc -m install -s jira
+# ahc -m install -s web
 # ahc -m install -s all
 --------------------------------------------------------------
 
