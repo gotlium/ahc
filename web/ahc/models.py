@@ -8,6 +8,8 @@ TYPES = (
 	('django','django',),
 	('python','python',),
 	('php','php',),
+	('ruby','ruby'),
+	('ror','ror'),
 )
 
 SERVERS = (
@@ -47,12 +49,13 @@ class Host(DatesModel):
 		default='default')
 	static = models.BooleanField('Static tune', default=True)
 	git = models.BooleanField('GIT repository', default=True)
-	username = models.CharField('Login', blank=True, max_length=16)
-	password = models.CharField('Password', blank=True, max_length=16)
+	username = models.CharField('Login', blank=True, null=True, max_length=16)
+	password = models.CharField('Password', blank=True, null=True, max_length=16)
 	status = models.BooleanField('availability status', default = True,
 		db_index=True)
 
 	class Meta:
+		ordering = ['-id']
 		verbose_name = 'Host'
 		verbose_name_plural = 'Hosts'
 
@@ -62,8 +65,8 @@ class Host(DatesModel):
 
 class MySQL(DatesModel):
 	db_name = models.CharField('DB name', max_length=16, unique=True)
-	db_user = models.CharField('DB username', max_length=16)
-	db_pass = models.CharField('DB password', max_length=16)
+	db_user = models.CharField('Username', max_length=16)
+	db_pass = models.CharField('Password', max_length=16)
 	host = models.ForeignKey(Host, editable=False)
 
 	class Meta:
@@ -73,8 +76,8 @@ class MySQL(DatesModel):
 
 
 class FTP(DatesModel):
-	ftp_user = models.CharField('FTP username', max_length=16, unique=True)
-	ftp_pass = models.CharField('FTP password', max_length=16)
+	ftp_user = models.CharField('Username', max_length=16, unique=True)
+	ftp_pass = models.CharField('Password', max_length=16)
 	folder = DirectoryPathField('Folder', max_length=250, blank=True,
 		path='/srv/projects/', default="")
 	host = models.ForeignKey(Host, editable=False)
@@ -86,8 +89,8 @@ class FTP(DatesModel):
 
 
 class DNS(DatesModel):
-	domain = models.CharField('Name', max_length=50, unique=True)
-	ip_address = models.IPAddressField('IP address', default=external_ip)
+	domain = models.CharField('Domain', max_length=50, unique=True)
+	ip_address = models.IPAddressField('IP-address', default=external_ip)
 	host = models.ForeignKey(Host, editable=False)
 
 	class Meta:

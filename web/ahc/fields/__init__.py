@@ -24,7 +24,8 @@ class ImagesDirField(forms.ChoiceField):
 			for f in dirs:
 				if self.match is None or self.match_re.search(f):
 					f = os.path.join(root, f)
-					if f.find('.git') == -1:
+					lf = f.lower()
+					if lf.find('.git') == -1 and lf.find('cache') == -1:
 						dirname = (f, f.replace(path, "", 1).replace("\\", "/"))
 						if os.path.islink(f):
 							continue

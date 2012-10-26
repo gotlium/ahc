@@ -257,10 +257,11 @@ class CoreHttp(HostPath):
 			'For check http use this command:\n\tlinks http://%s:%s/' % \
 				(host_name, self.config['port'])
 		)
-		info_message(
-			'For check https use this command:\n\tlinks https://%s:%s/' % \
-				(host_name, self.config['ssl_port'])
-		)
+		if self.base.main['use_ssl']:
+			info_message(
+				'For check https use this command:\n\tlinks https://%s:%s/' % \
+					(host_name, self.config['ssl_port'])
+			)
 
 	def _delete(self, host_name):
 		isHost(host_name)

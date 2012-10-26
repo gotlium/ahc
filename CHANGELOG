@@ -7,6 +7,7 @@ Apache Host Control v.1.2(ENG)
         Apache / WSGI(Python,Django)
         Nginx / uWSGI(Python,Django)
         MySQL,FTP / Random password
+        Web
 
     Fixes:
         FTP & GIT path fixes
@@ -55,7 +56,7 @@ Apache Host Control v.1.0(ENG)
         Firewall rules. (location: /etc/init.d/rc.fw)
 
 
-########################################################################################################################
+################################################################################
 
 
 Apache Host Control v.1.2(RUS)
@@ -88,6 +89,7 @@ Apache Host Control v.1.0(RUS)
         Добавлен модуль для работы с зонами Bind9.
         Добавлены тесты, эмулирующие основные действия программы.
         Добавлено шифрование, с использованием EncFS для директории с проектами.
+        Веб интерфейс.
 
     FTP:
         Добавлена поддержка кастомного логина и пароля.

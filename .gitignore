@@ -4,3 +4,6 @@
 .idea
 .DS_Store
 db.sqlite
+*.log
+logfile
+build

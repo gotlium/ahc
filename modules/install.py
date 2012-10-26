@@ -497,8 +497,8 @@ class Install(object):
 		putFile(init, configuration)
 		os.system('chmod +x %s' % init)
 		os.system('update-rc.d ahc-web defaults >& /dev/null')
+		os.system('cd web/ && pip install -r requirements.txt && cd -')
 		os.system('%s start' % init)
-
 
 		for i in range(3):
 			input = raw_input('Enter basic domain name: ')
