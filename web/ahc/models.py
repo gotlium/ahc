@@ -1,3 +1,4 @@
+from preferences.models import Preferences
 from ConfigParser import RawConfigParser
 from django.db import models
 
@@ -97,3 +98,26 @@ class DNS(DatesModel):
 		ordering = ['-id']
 		verbose_name = 'Dns record'
 		verbose_name_plural = 'DNS'
+
+'''
+class AhcPreferences(Preferences):
+	__module__ = 'preferences.models'
+
+	#apache2_ssl = models.BooleanField('Apache SSL', default=False)
+	#nginx_ssl = models.BooleanField('Nginx SSL', default=False)
+	ftp = models.BooleanField('FTP', default=False)
+	bind = models.BooleanField('Bind', default=False)
+	#mysql = models.BooleanField('MySQL', default=False)
+	firewall = models.BooleanField('Firewall', default=False)
+	#nginx_proxy = models.BooleanField('Nginx as proxy', default=False)
+	sendmail = models.BooleanField('Sendmail stub', default=False)
+	#mail = models.BooleanField('Webmail', default=False)
+	shell = models.BooleanField('Shell', default=False)
+	#jira = models.BooleanField('Jira', default=False)
+	#confluence = models.BooleanField('Confluence', default=False)
+
+	class Meta:
+		ordering = ['-id']
+		verbose_name = 'Preferences'
+		verbose_name_plural = 'Preferences'
+'''

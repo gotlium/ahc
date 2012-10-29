@@ -1,15 +1,19 @@
+В целом нужно сначала создавать проект по очищенному пути.
+После создаем стандартный путь и переносим все файлы.
+Удаляем временную директорию
+Очищаем код от старых костылей.
+
 Before release:
     FTP fixes for version 2.3.5
     Ruby fixes
 
 Current:
     Nginx (Ruby+RoR).
-    GitLab support
 
 Sometime:
     OpenVPN configuration
     Sphinx(check mysql db exists at first. use by default /etc/sphinxsearch/sphinx.conf)
     If main domain was removed, sub domain can't be removed.
-    List of all created websites/domains/ftp accounts.
-    Options for real SSL certificates(apache & nginx).
-    auto - how many cpu for nginx, uwsgi & another ...
+    List of all created websites/domains/ftp accounts & etc.
+    SSL Options for real certificates(apache & nginx).
+    auto detect - how many cpu need for nginx, uwsgi & another services ...

@@ -11,6 +11,7 @@ class CustomIndexDashboard(Dashboard):
 			column=1,
 			models=(
 				'ahc.models.*',
+				#'preferences.models.*'
 			)
 		))
 

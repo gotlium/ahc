@@ -3,6 +3,7 @@
 __author__ = 'GoTLiuM InSPiRIT <gotlium@gmail.com>'
 __date__ = "26.10.12"
 
+#from preferences.admin import PreferencesAdmin
 from django.contrib import admin
 
 from models import *
@@ -28,27 +29,12 @@ class DNSInline(admin.TabularInline):
 
 class HostAdmin(admin.ModelAdmin):
 	fieldsets = [
-		('Basic', {'fields': [
-			'name'
-		],
-		}),
-		('Auth', {'fields': [
-			'username', 'password'
-		],
-		}),
-		('WebServer', {'fields': [
-			'server',
-			'server_type',
-			'server_module',
-			'static',
-			'status'
-		],
-		}),
-		('Additionally', {'fields': [
-			'git'
-		]
-		}),
-		]
+		('Basic', {'fields': ['name']}),
+		('Auth', {'fields': ['username', 'password']}),
+		('WebServer', {'fields': ['server','server_type','server_module',
+								  'static','status']}),
+		('Additionally', {'fields': ['git']}),
+	]
 	list_filter = (
 		'server', 'server_type', 'server_module', 'status', 'created', 'updated'
 	)
@@ -72,4 +58,14 @@ class HostAdmin(admin.ModelAdmin):
 		return self.readonly_fields
 
 
+'''
+class PreferencesAdmin(PreferencesAdmin):
+	exclude = ('sites',)
+	form = PreferencesAdminForm
+
+	def add_view(self, *args, **kwargs):
+		return self.changelist_view(*args, **kwargs)
+'''
+
 admin.site.register(Host, HostAdmin)
+#admin.site.register(AhcPreferences, PreferencesAdmin)

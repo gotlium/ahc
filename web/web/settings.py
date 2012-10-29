@@ -134,8 +134,8 @@ INSTALLED_APPS = (
 	'admin_login_captcha',
 	'django.contrib.admin',
 	'ahc',
+	#'preferences',
 )
-
 
 GRAPPELLI_ADMIN_TITLE = 'AHC'
 GRAPPELLI_INDEX_DASHBOARD = 'ahc.dashboard.CustomIndexDashboard'
