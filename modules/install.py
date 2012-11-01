@@ -494,12 +494,6 @@ class Install(object):
 		if fileExists(init):
 			error_message('Web application already installed.')
 
-		putFile(init, configuration)
-		os.system('chmod +x %s' % init)
-		os.system('update-rc.d ahc-web defaults >& /dev/null')
-		os.system('cd web/ && pip install -r requirements.txt && cd -')
-		os.system('%s start' % init)
-
 		for i in range(3):
 			input = raw_input('Enter basic domain name: ')
 			if isValidHostname(input):
@@ -539,6 +533,14 @@ class Install(object):
 					   '/dev/null' % conf)
 
 		hosts('add', "ahc.%(domain)s" % conf)
+
+		putFile(init, configuration)
+		os.system('chmod +x %s' % init)
+		os.system('update-rc.d ahc-web defaults >& /dev/null')
+		os.system('cd web/ && pip install -r requirements.txt && cd -')
+
+		os.system('%s start' % init)
+
 		info_message("Access to ahc: http://ahc.%(domain)s/" % conf)
 
 		info_message('Web application was successfully installed.')

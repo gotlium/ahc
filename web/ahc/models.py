@@ -1,4 +1,4 @@
-from preferences.models import Preferences
+#from preferences.models import Preferences
 from ConfigParser import RawConfigParser
 from django.db import models
 

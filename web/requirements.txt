@@ -1,4 +1,4 @@
 django-grappelli
 django-simple-captcha
-git+https://github.com/Govexec/ge-admin-login-captcha.git
 django-preferences
+git+https://github.com/Govexec/ge-admin-login-captcha.git
