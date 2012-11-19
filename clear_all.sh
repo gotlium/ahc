@@ -32,6 +32,7 @@ case $yn in
 	rm -rf /etc/uwsgi/apps-*/*
 	rm -f /usr/sbin/sendmail
 	rm /var/log/uwsgi/app/*
+	rm ﻿/etc/vsftpd/vusers/*
 	killall -9 uwsgi-core >& /dev/null
 	killall -9 uwsgi >& /dev/null
 
@@ -40,8 +41,15 @@ case $yn in
 		mysqlpasswd="password"
 	fi
 	mysql -p"$mysqlpasswd" -e 'DELETE FROM vsftpd.accounts;'
+	mysql -p"$mysqlpasswd" -e 'SHOW DATABASES;'|awk '{print $1}'|grep -vi 'database'|grep -vi 'information'|grep -v 'vsftpd'|grep -v mysql|grep -vi performance_schema|xargs -I db mysql -p"$mysqlpasswd" -e "drop database db;"
 	echo
 
+	for zone in `cat /etc/bind/myzones.conf | grep zone | cut -d'"' -f2`; do
+		if [ ! -z "$zone" ] && [ -f "/etc/bind/$zone" ]; then
+			rm "/etc/bind/$zone"
+		fi
+	done
+	echo "" > /etc/bind/myzones.conf
 	killall -9 python >& /dev/null
 
 	/etc/init.d/apache2 stop

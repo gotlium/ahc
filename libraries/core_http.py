@@ -1,5 +1,6 @@
 __author__ = 'gotlium'
 
+
 import os
 import re
 import crypt
@@ -7,6 +8,7 @@ import crypt
 from libraries.helpers import *
 from libraries.fs import *
 from libraries.path import HostPath
+
 
 class CoreHttp(HostPath):
 
@@ -148,33 +150,25 @@ class CoreHttp(HostPath):
 			error_message("Can't change permissions to directory!")
 
 	def _setup_django(self, host_name, data, files):
-		project = host_name.replace('.', '_').replace('-', '_')
-		project = re.sub('([^a-z0-9_])+', '', project)
-		project = '_%s' % project if project[0].isdigit() else project
-
-		project_root = '%s/%s' % (self.base.main['projects_directory'], project)
-		project_root = re.sub('([^a-z0-9_\/])+', '', project_root)
-
-		if fileExists(project_root):
-			error_message('Website already exists!')
-
-		self.project_root = project_root
+		self.project_root = data['website_dir']
 		bin = self.base.main['bin_django_admin']
 
-		system_by_code('cd %s && %s startproject %s && cd %s && ln -s ./ www' %\
-					   (self.base.main['projects_directory'], bin, project, project))
+		if fileExists('/tmp/new_django_project'):
+			system_by_code('rm -rf /tmp/new_django_project')
+		system_by_code('cd /tmp/ && %s startproject new_django_project' % bin)
+		system_by_code('mv /tmp/new_django_project/* %s/' % self.project_root)
 
 		config = {
 			'port': self.config['port'],
 			'hostname': host_name,
-			'root': project_root,
-			'project_name': project,
+			'root': self.project_root,
+			'project_name': 'new_django_project',
 			'ssl_section': '',
 			'projects_dir': self.base.main['projects_directory'],
 			'optimize': self.__optimizationTemplate(),
 			'socket_path': self.socket_path,
 			'pid_path': self.pid_path,
-			'basic_auth': self.__authTemplate(project_root)
+			'basic_auth': self.__authTemplate(self.project_root)
 		}
 
 		if not putFile(files['host_file'], self.__getTemplate(self.type) % config):
@@ -184,18 +178,11 @@ class CoreHttp(HostPath):
 			config['ssl_section'] = self.ssl_template
 			if not putFile(files['ssl_host_file'], self.__getTemplate(self.type) % config):
 				system_by_code("Error, when trying to save example file!")
-		try:
-			uid = int(self.base.main['useruid'])
-			os.chown(project_root, uid, uid)
-			#system_by_code('chown %d:%d %s/* -R' % (uid,uid,project_root))
-		except Exception:
-			error_message("Can't change permissions to directory!")
 
 	def __mainDomainInstall(self, host_name):
 		base_domain = '.' . join(host_name.split('.')[1:])
 		data = self.getHostData(base_domain)
-		if self.type != 'django' and not\
-		fileExists(data['website_dir']):
+		if not fileExists(data['website_dir']):
 			self.add(base_domain)
 			info_message('')
 
@@ -231,11 +218,10 @@ class CoreHttp(HostPath):
 			self.__mainDomainInstall(host_name)
 
 		if fileExists(data['website_dir']):
-			error_message('Website is exists!')
+			error_message('Website "%s" is exists!' % host_name)
 
-		if self.type != 'django':
-			os.mkdir(data['domain_dir'], 0755)
-			os.mkdir(data['website_dir'], 0755)
+		os.mkdir(data['domain_dir'], 0755)
+		os.mkdir(data['website_dir'], 0755)
 
 		self.__setSocketAndPidPath(host_name)
 		if not hasattr(self, '_setup_%s' % self.type):
@@ -243,14 +229,13 @@ class CoreHttp(HostPath):
 		method = self.__getattribute__('_setup_%s' % self.type)
 		method(host_name, data, files)
 		self.__siteSetActive(host_name, True)
-		if self.type != 'django':
-			try:
-				uid = int(self.base.main['useruid'])
-				os.chown(data['domain_dir'], uid, uid)
-				if fileExists(data['website_dir']):
-					os.chown(data['website_dir'], uid, uid)
-			except Exception:
-				error_message("Can't change permissions to directory!")
+		try:
+			uid = int(self.base.main['useruid'])
+			os.chown(data['domain_dir'], uid, uid)
+			if fileExists(data['website_dir']):
+				os.chown(data['website_dir'], uid, uid)
+		except Exception:
+			error_message("Can't change permissions to directory!")
 
 		info_message('Site successfully added.')
 		info_message(
@@ -267,11 +252,7 @@ class CoreHttp(HostPath):
 		isHost(host_name)
 		data = self.getHostData(host_name)
 		files = self.getHostFiles(host_name, self.type, self.web_server)
-		if self.type != 'django':
-			domain_dir = data['domain_dir']
-		else:
-			project = host_name.replace('.', '_')
-			domain_dir = '%s/%s' % (self.base.main['projects_directory'], project)
+		domain_dir = data['domain_dir']
 
 		if not fileExists(domain_dir):
 			error_message('Projects directory not exists!')

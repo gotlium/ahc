@@ -1,11 +1,13 @@
 __author__ = 'gotlium'
 
+
 import unittest
 from configs import Configs
-from human_curl.exceptions import CurlError
-import human_curl as hurl
+import grab
+from grab import GrabNetworkError
 import os
 from time import sleep
+
 
 class CoreHttpTestCase(unittest.TestCase, Configs):
 
@@ -39,14 +41,16 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
 
 	def setUp(self):
 		self.loadConfigs()
-		sleep(3)
+		sleep(5)
 
-	def __getPage(self, url):
-		try:
-			return hurl.get(url, timeout=5.0, allow_redirects=True)
-		except Exception:
-			sleep(5)
-			return hurl.get(url, allow_redirects=True)
+	def __getPage(self, url, hammer_mode=True):
+		g = grab.Grab()
+		g.setup(connect_timeout=1, timeout=3)
+		g.setup(hammer_mode=hammer_mode, hammer_timeouts=(
+			(3, 5), (5, 7), (7, 9), (15, 20), (50, 60)
+		))
+		g.go(url)
+		return g.response
 
 	def __getProtocols(self):
 		protocols = ['http']
@@ -77,15 +81,15 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
 				search(request.headers['server'], self.web_server), -1
 			)
 			self.assertNotEquals(
-				search(request.content, content), -1
+				search(request.body, content), -1
 			)
-			self.assertEquals(request.status_code, 200)
+			self.assertEquals(request.code, 200)
 
 	def _checkHostNotFound(self, host):
 		urls = self.__getUrls(host)
 		for url in urls:
-			with self.assertRaises(CurlError):
-				self.__getPage(url)
+			with self.assertRaises(GrabNetworkError):
+				self.__getPage(url, hammer_mode=False)
 
 	def _addHost(self, type, host_name, flags='', action='a'):
 		execution_code = os.system(
@@ -103,149 +107,149 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
 		self._addHost(type, host_name, flags, 'f')
 
 
-	def __add_host_test(self, type, domains, check_line):
+	def _add_host_test(self, type, domains, check_line):
 		for domain in domains:
 			self._addHost(type, domain)
 			self._checkHostFound(domain, check_line)
 
-	def __disable_host_test(self, type, domains):
+	def _disable_host_test(self, type, domains):
 		for domain in domains:
 			self._disableHost(type, domain)
 			self._checkHostNotFound(domain)
 
-	def __enable_host_test(self, type, domains, check_line):
+	def _enable_host_test(self, type, domains, check_line):
 		for domain in domains:
 			self._enableHost(type, domain)
 			self._checkHostFound(domain, check_line)
 
-	def __remove_host_test(self, type, domains):
+	def _remove_host_test(self, type, domains):
 		for domain in domains:
 			self._delHost(type, domain)
 			self._checkHostNotFound(domain)
 
 
 	def test_a_add_php_host(self):
-		self.__add_host_test(
+		self._add_host_test(
 			'php', self.php_domains, 'PHP:Hello, World!'
 		)
 
 	def test_a_add_python_host(self):
-		self.__add_host_test(
+		self._add_host_test(
 			'python', self.python_domains, 'Python:Hello, World!'
 		)
 
 	def test_a_add_django_host(self):
-		self.__add_host_test(
+		self._add_host_test(
 			'django', self.django_domains, "It worked!"
 		)
 
 	def test_b_add_php_sub_domain(self):
-		self.__add_host_test(
+		self._add_host_test(
 			'php', self.php_sub_domains, 'PHP:Hello, World!'
 		)
 
 	def test_b_add_python_sub_domain(self):
-		self.__add_host_test(
+		self._add_host_test(
 			'python', self.python_sub_domains, 'Python:Hello, World!'
 		)
 
 	def test_b_add_django_sub_domain(self):
-		self.__add_host_test(
+		self._add_host_test(
 			'django', self.django_sub_domains, "It worked!"
 		)
 
 
 	def test_c_disable_php_host(self):
-		self.__disable_host_test(
+		self._disable_host_test(
 			'php', self.php_domains
 		)
 
 	def test_c_disable_python_host(self):
-		self.__disable_host_test(
+		self._disable_host_test(
 			'python', self.python_domains
 		)
 
 	def test_c_disable_django_host(self):
-		self.__disable_host_test(
+		self._disable_host_test(
 			'django', self.django_domains
 		)
 
 
 	def test_d_disable_php_sub_host(self):
-		self.__disable_host_test(
+		self._disable_host_test(
 			'php', self.php_sub_domains
 		)
 
 	def test_d_disable_python_sub_host(self):
-		self.__disable_host_test(
+		self._disable_host_test(
 			'python', self.python_sub_domains
 		)
 
 	def test_d_disable_django_sub_host(self):
-		self.__disable_host_test(
+		self._disable_host_test(
 			'django', self.django_sub_domains
 		)
 
 
 	def test_e_enable_php_host(self):
-		self.__enable_host_test(
+		self._enable_host_test(
 			'php', self.php_domains, 'PHP:Hello, World!'
 		)
 
 	def test_e_enable_python_host(self):
-		self.__enable_host_test(
+		self._enable_host_test(
 			'python', self.python_domains, 'Python:Hello, World!'
 		)
 
 	def test_e_enable_django_host(self):
-		self.__enable_host_test(
+		self._enable_host_test(
 			'django', self.django_domains, "It worked!"
 		)
 
 
 	def test_f_enable_php_sub_host(self):
-		self.__enable_host_test(
+		self._enable_host_test(
 			'php', self.php_sub_domains, 'PHP:Hello, World!'
 		)
 
 	def test_f_enable_python_sub_host(self):
-		self.__enable_host_test(
+		self._enable_host_test(
 			'python', self.python_sub_domains, 'Python:Hello, World!'
 		)
 
 	def test_f_enable_django_sub_host(self):
-		self.__enable_host_test(
+		self._enable_host_test(
 			'django', self.django_sub_domains, "It worked!"
 		)
 
 
 	def test_g_remove_php_sub_domain(self):
-		self.__remove_host_test(
+		self._remove_host_test(
 			'php', self.php_sub_domains
 		)
 
 	def test_g_remove_python_sub_domain(self):
-		self.__remove_host_test(
+		self._remove_host_test(
 			'python', self.python_sub_domains
 		)
 
 	def test_g_remove_django_sub_domain(self):
-		self.__remove_host_test(
+		self._remove_host_test(
 			'django', self.django_sub_domains
 		)
 
 
 	def test_h_remove_php_host(self):
-		self.__remove_host_test(
+		self._remove_host_test(
 			'php', self.php_domains
 		)
 
 	def test_h_remove_python_host(self):
-		self.__remove_host_test(
+		self._remove_host_test(
 			'python', self.python_domains
 		)
 
 	def test_h_remove_django_host(self):
-		self.__remove_host_test(
+		self._remove_host_test(
 			'django', self.django_domains
 		)

@@ -14,7 +14,7 @@ class Git(HostPath):
 			error_message('Git not installed!')
 
 	def add(self, host_name):
-		data = self.getExistsHostData(host_name)
+		data = self.getHostData(host_name)
 		website_dir = data['website_dir']
 		repository = '%s/%s.git' % (self.base.git['repositories'], host_name)
 		post_receive = '%s/hooks/post-receive' % repository
@@ -53,7 +53,7 @@ class Git(HostPath):
 		info_message('*'*100, 'blue')
 
 	def delete(self, host_name):
-		data = self.getExistsHostData(host_name)
+		data = self.getHostData(host_name)
 		website_dir = data['website_dir']
 		repository = '%s/%s.git' % (self.base.git['repositories'], host_name)
 

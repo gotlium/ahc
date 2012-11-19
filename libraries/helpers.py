@@ -8,7 +8,7 @@ from math import log
 import re
 import sys
 
-from fs import getFileArr, getFile, fileExists, putFile
+from fs import getFileArr, getFile, fileExists, putFile, delFile
 
 COLORS = {
 	'black': "\033[0;30m",
@@ -33,7 +33,7 @@ def error_message(msg):
 def info_message(msg, color='green'):
 	print ("%s%s%s" % (COLORS[color], msg, COLORS['close']))
 
-def system(command, as_text = False):
+def system(command, as_text=False):
 	try:
 		if not command: return None
 		p = Popen(command, shell=True, stdout=PIPE, stderr=STDOUT)

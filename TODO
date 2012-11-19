@@ -1,14 +1,8 @@
-В целом нужно сначала создавать проект по очищенному пути.
-После создаем стандартный путь и переносим все файлы.
-Удаляем временную директорию
-Очищаем код от старых костылей.
-
-Before release:
-    FTP fixes for version 2.3.5
-    Ruby fixes
-
-Current:
-    Nginx (Ruby+RoR).
+Before version 2.0 will be released:
+    VSFTPD config for version >= 2.3.5
+    Nginx / Ruby+RoR support
+    Nginx / proxied hosts support
+    Virtualenv support
 
 Sometime:
     OpenVPN configuration

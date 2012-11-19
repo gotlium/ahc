@@ -8,7 +8,7 @@ Package for manage virtual hosts in Apache2/Nginx/MySQL5/Vsftpd/Bind9.
 __author__ = 'GoTLiuM InSPiRIT <gotlium@gmail.com>'
 __copyright__ = 'Copyright 2012, GoTLiuM InSPiRiT <gotlium@gmail.com>'
 __license__ = "GPL"
-__version_info__ = (1, 2, 0)
+__version_info__ = (1, 3, 0)
 __version__ = ".".join(map(str, __version_info__))
 __maintainer__ = "GoTLiuM InSPiRIT"
 __email__ = "gotlium@gmail.com"

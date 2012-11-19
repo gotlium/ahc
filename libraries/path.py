@@ -46,21 +46,3 @@ class HostPath(object):
 			'enable_host_file': enable_host_file,
 			'enable_ssl_host_file': enable_ssl_host_file
 		}
-
-	def getExistsHostData(self, host_name):
-		data = self.getHostData(host_name)
-		for key in('domain_dir', 'website_dir'):
-			if not fileExists(data[key]):
-				if not data['is_subdomain']:
-					domain_dir = data[key].replace('.', '_')
-					domain_dir = re.sub('([^a-z0-9_\/])+', '', domain_dir)
-					if not fileExists(domain_dir):
-						raise Exception('Project not exists!')
-					data[key] = domain_dir
-				else:
-					project = host_name.replace('.', '_')
-					project_root = '%s/%s' % (self.base.main['projects_directory'], project)
-					if not fileExists(project_root):
-						raise Exception('Project not exists!')
-					data[key] = project_root
-		return data

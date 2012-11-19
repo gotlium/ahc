@@ -5,20 +5,12 @@ import os
 
 class GitTestCase(TestCase):
 
-	domains = {
-		0: {
-			'host': 'git.dev', 'type': 'php'
-		},
-		1: {
-			'host': 'sub.git.dev', 'type': 'php'
-		},
-		2: {
-			'host': 'djgit.dev', 'type': 'django'
-		},
-		3: {
-			'host': 'sub.djgit.dev', 'type': 'django'
-		}
-	}
+	domains = [
+		{'host': 'php_git.dev', 'type': 'php'},
+		{'host': 'sub.php_git.dev', 'type': 'php'},
+		{'host': 'django-git.dev', 'type': 'django'},
+		{'host': 'sub.django-git.dev', 'type': 'django'},
+	]
 
 	def __addRepository(self, host_name, action='a'):
 		execution_code = os.system('ahc -m git -%s %s 1> /dev/null' %\

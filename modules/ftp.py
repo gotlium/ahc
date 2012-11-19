@@ -47,7 +47,7 @@ class Ftp(HostPath):
 		if self.base.options.disable: # where disable = folder
 			folder = self.base.options.disable
 		else:
-			data = self.getExistsHostData(host_name)
+			data = self.getHostData(host_name)
 			folder = data['domain_dir']
 		return folder
 
