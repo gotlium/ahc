@@ -21,6 +21,10 @@ PKGDIR="`pwd`"
 TMPDIR="/tmp/tempinstall"
 
 if [ ! -z "$FAKEROOTKEY" ]; then
+    rm -rf .git .idea .gitignore clear_all.sh build TODO
+    find . -name '*.pyc' -delete
+    find . -type f|xargs chmod 0644
+    find . -type d|xargs chmod 0755
 	rm -rf ahc.deb
 	chmod +x DEBIAN/postinst
 	rm -rf $TMPDIR

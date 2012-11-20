@@ -17,10 +17,10 @@
                         Установка пакета
 --------------------------------------------------------------
 $ sudo -i
-# apt-get install -y python-pip python-mysqldb python-pycurl python-flup git-core make
+# apt-get install -y python-pip python-mysqldb python-flup git-core make
 # cd /usr/src/ && git clone https://github.com/gotlium/ahc.git
 # cd ahc/ && pip install -r requirements.txt && make install
-# cd && ahc -m install -s lamp
+# cd && ahc -m install -s lamp && ahc -m install -s firewall
 --------------------------------------------------------------
 Файл конфигурации тут(ознакомиться обязательно): /etc/ahc.conf
 --------------------------------------------------------------
