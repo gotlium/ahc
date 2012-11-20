@@ -27,7 +27,7 @@ iptables xtables-addons-common shtool memcached locate mysql-server mysql-client
 exim4-config sphinxsearch redis-server python-django php5-fpm libpam-ldap \
 libapache2-mod-ruby libapache2-mod-passenger encfs screen python-redis python-imaging \
 python-dev libxml2-dev libxslt-dev libapache2-mod-wsgi libapache2-mod-rpaf \
-uwsgi uwsgi-plugin-python python-virtualenv bind9
+uwsgi uwsgi-plugin-python python-virtualenv bind9 lftp
 
 echo 'packages installed.'
 sleep 3
