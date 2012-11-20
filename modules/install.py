@@ -41,6 +41,11 @@ class Install(object):
 			backFile(filename)
 		putFile(filename, configuration)
 		os.system('. %s' % filename)
+		# Screenrc
+		filename = '%s/.screenrc' % home
+		if fileExists(filename):
+			backFile(filename)
+		putFile(filename, getTemplate('screenrc'))
 		info_message('Shell config for "%s" successfully installed.' % shell)
 
 	def mysql(self):
