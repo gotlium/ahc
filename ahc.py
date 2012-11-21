@@ -65,7 +65,10 @@ class Ahc(Configs):
 
 	def loadModule(self):
 		if self.options.module is None:
-			error_message("Module is not set!")
+			if self.main['default_web_server']:
+				self.options.module = self.main['default_web_server']
+			else:
+				error_message("Module is not set!")
 		module = self.options.module
 		try:
 			importedModule = __import__(

@@ -18,6 +18,8 @@ class CoreHttp(HostPath):
 		self.web_server = web_server
 		self.base = base
 		self.type = base.options.type
+		if not base.options.type:
+			self.type = self.base.main['default_type']
 		self.config = base.__getattribute__(self.web_server)
 		checkInstall(self.config)
 
@@ -211,6 +213,8 @@ class CoreHttp(HostPath):
 			error_message("Error, when trying to change hosts data!")
 
 	def _add(self, host_name):
+		if not self.type:
+			error_message('Type is not set!')
 		isHost(host_name)
 		data = self.getHostData(host_name)
 		files = self.getHostFiles(host_name, self.type, self.web_server)

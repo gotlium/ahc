@@ -78,13 +78,40 @@ class Bind(object):
 	def __isSubDomain(self, host_name):
 		return len(host_name.split('.')) == 3
 
+	def _get_host_ip(self):
+		if not self.base.options.ip:
+			if not self.base.main['external_ip']:
+				error_message("External ip-address is not set!")
+			elif self.base.main['external_ip'] == '192.168.0.1':
+				error_message("External ip-address is not set!")
+			return self.base.main['external_ip']
+		return self.base.options.ip.strip()
+
+	def _check_ip(self, external_ip):
+		if not isValidIp(external_ip):
+			error_message("IP not valid!")
+
+	def _get_ns_ips(self, host_ip):
+		ns_ips = self.config['ns_ips'].split(',')
+		if not self.config['ns_ips']:
+			ns_ips = [host_ip,host_ip]
+		elif len(ns_ips) == 1:
+			ns_ips.insert(0, host_ip)
+		ns = {}
+		for i,ip in enumerate(ns_ips):
+			ns['ns%d' % (i + 1)] = ip
+		return ns
+
 	def add(self, host_name):
 		isHost(host_name)
+
 		filename = self.__getFile(host_name)
-		if not self.base.options.ip:
-			error_message("IP address not set!")
-		elif not isValidIp(self.base.options.ip):
-			error_message("IP not valid!")
+		host_ip = self._get_host_ip()
+		ns_servers = self._get_ns_ips(host_ip)
+
+		self._check_ip(host_ip)
+		map(self._check_ip, ns_servers.values())
+
 		if self.__isSubDomain(host_name):
 			if not self.__addSubDomain(host_name):
 				error_message("Error, when saving zone configuration!")
@@ -93,9 +120,10 @@ class Bind(object):
 		else:
 			config = {
 				'hostname': host_name,
-				'hostip': self.base.options.ip,
+				'host_ip': host_ip,
 				'datetime': str(date.today().strftime("%Y%m%d"))
 			}
+			config.update(ns_servers)
 			configuration = getTemplate('bind9') % config
 			putFile(filename, configuration)
 			if not self.__addToMyZone(host_name):

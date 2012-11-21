@@ -16,9 +16,13 @@ class Git(HostPath):
 	def add(self, host_name):
 		data = self.getHostData(host_name)
 		website_dir = data['website_dir']
+
+		if not fileExists(website_dir):
+			error_message('Website is not installed!')
+
 		repository = '%s/%s.git' % (self.base.git['repositories'], host_name)
 		post_receive = '%s/hooks/post-receive' % repository
-		external_ip = self.base.git['external_ip']
+		external_ip = self.base.main['external_ip']
 
 		if fileExists(repository):
 			error_message('File exists! Enter another hostname, or remove old repository!')
@@ -28,7 +32,10 @@ class Git(HostPath):
 
 		if fileExists('%s/.git' % website_dir):
 			system_by_code('cd %s && git remote rm origin' % website_dir)
-		system_by_code('cd %s && git init 1> /dev/null && git remote add origin %s' % (website_dir, repository))
+		system_by_code(
+			'cd %s && git init 1> /dev/null && git remote add origin %s' % \
+			(website_dir, repository)
+		)
 
 		putFile(post_receive, getTemplate('git-post-receive') % data)
 		system_by_code('chmod +x %s' % post_receive)

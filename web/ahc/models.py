@@ -25,7 +25,7 @@ MODS = (
 
 config = RawConfigParser()
 config.read('../configs.cfg')
-external_ip = config.get('git', 'external_ip')
+external_ip = config.get('main', 'external_ip')
 if external_ip == '192.168.0.1':
 	external_ip = ""
 
