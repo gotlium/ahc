@@ -1,0 +1,69 @@
+Настройка резервного копирования
+
+> Настройка для ленивых
+
+Открываем файл: /etc/ahc.conf и настраиваем резервную копию, для всех
+веб-сайтов и всех баз данных. Устанавливаем значение ключей databases и
+directories в all. Пример:
+
+databases = all
+directories = all
+
+Теперь нужно выбрать протокол, для хранения копий. Доступные протоколы:
+local, ftp, sftp
+
+Если вы используете локальное резервное копирование на примонтированный винт,
+то настройка сводится к такому виду:
+remote_protocol = local
+remote_hostname =
+remote_username =
+remote_password =
+remote_directory = /mnt/backup_hard_drive/backups
+remote_expire_days = 7
+
+Примечание:
+    Завершающего слеша в директориях устанавливать не нужно.
+
+
+> Точечная настройка
+
+Не всегда нужно делать полные бекапы. Иногда достаточно хранить лишь
+некоторые веб-сайты и некоторые БД. Пример конфигурации:
+
+databases = db1,db2,db3
+directories = /srv/projects/site1,/srv/projects/site2,/srv/projects/site3/media
+
+Как видим, достаточно перечислить имена папок и БД,
+через запятую. Директории могут быть любыми.
+
+
+> Настрока crontab
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+MAILTO=MY-EMAIL-BOX@gmail.com
+
+15 2 * * * /usr/bin/ahc -m backup -b mysql
+30 2 * * *  /usr/bin/ahc -m backup -b site
+
+
+> Настройка уведомлений в случае возникновения ошибок
+
+Если вы хотите получать уведомление при возникновении ошибок,
+настройте секции xmpp и smtp. Например:
+
+[xmpp]
+enabled = 1
+user = USER@gmail.com
+pass = PASSWORD
+resource = ahc
+mail_to = MY-GMAIL-ACCOUNT@gmail.com
+
+[smtp]
+enabled = 1
+host = smtp.gmail.com
+port = 587
+user = USER@gmail.com
+pass = PASSWORD
+from_addr = ahc@MY-SERVER-HOST-NAME.org
+mail_to = MY-EMAIL-BOX@gmail.com

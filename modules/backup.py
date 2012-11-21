@@ -7,6 +7,7 @@ import paramiko
 import atexit
 import signal
 import ftplib
+import MySQLdb
 import re
 import os
 
@@ -158,12 +159,19 @@ class Backup(LockFile):
 			self.connect.remove_directories(self.expired)
 
 	def __build_cmd(self, config, is_directory=False):
+		config['exclude'] = ""
+		if config['directories_exclude']:
+			exclude = config['directories_exclude'].split(',')
+			exclude = "--exclude '" + "' --exclude '".join(exclude) + "'"
+			config['exclude'] = exclude
+
 		if self.backup['remote_protocol'] in ('ftp', 'sftp'):
 			if is_directory:
-				ftp_cmd = 'mirror -R %(local)s %(remote)s; bye;'
+				ftp_cmd = 'mirror -R %(exclude)s %(local)s %(remote)s; bye;'
 			else:
 				config['local'] = os.path.basename(config['local'])
 				ftp_cmd = 'mput -d ./%(local)s -O %(remote)s; bye;'
+
 			cmd = "cd /tmp && lftp -e '"+ftp_cmd+"' -u "\
 				  "%(remote_username)s,%(remote_password)s "\
 				  "%(remote_protocol)s://%(remote_hostname)s 1> /dev/null"
@@ -173,7 +181,7 @@ class Backup(LockFile):
 				config['local'] = '%s/' % config['local']
 			config['directory'] = os.path.dirname(config['remote'])
 			return str(
-				'mkdir -p %(directory)s && rsync -au %(local)s '
+				'mkdir -p %(directory)s && rsync -au %(exclude)s %(local)s '
 				'%(remote)s 1> /dev/null' % config
 			)
 
@@ -228,7 +236,10 @@ class Backup(LockFile):
 		self.__clean_directory('db')
 
 	def _check(self):
-		if not self.backup['databases'] and not self.backup['directories']:
+
+		if not self.backup['remote_expire_days']:
+			error_message('Remote expire days in config file not configured.')
+		elif not self.backup['databases'] and not self.backup['directories']:
 			error_message('Backup settings is not configured.')
 		elif self.backup['remote_protocol'] == 'local':
 			if not self.backup['remote_directory']:
@@ -240,16 +251,43 @@ class Backup(LockFile):
 			 	('ftp', 'sftp', 'rsync', 'local'):
 			error_message('remote_protocol can be ftp or sftp.')
 
+	def __get_all_databases(self):
+		self.db = MySQLdb.connect(
+			self.base.mysql['host'], self.base.mysql['user'],
+			self.base.mysql['password']
+		)
+		self.cursor = self.db.cursor()
+		self.cursor.execute("SHOW DATABASES;")
+		databases = []
+		for row in self.cursor.fetchall():
+			databases.append(row[0])
+		return databases
+
+	def __get_all_webites(self):
+		directories = os.listdir(self.base.main['projects_directory'])
+		join = os.path.join
+		return [
+			join(self.base.main['projects_directory'],f) for f in directories
+		]
+
 	def _backup_db(self):
 		if not self.backup['databases']:
 			return
-		for db in self.backup['databases'].split(','):
+		elif self.backup['databases'] == 'all':
+			databases = self.__get_all_databases()
+		else:
+			databases = self.backup['databases'].split(',')
+		for db in databases:
 			self.__sync_db_file(self.__dump(db.strip()))
 
 	def _backup_website(self):
 		if not self.backup['directories']:
 			return
-		for directory in self.backup['directories'].split(','):
+		elif self.backup['databases'] == 'all':
+			directories = self.__get_all_webites()
+		else:
+			directories = self.backup['directories'].split(',')
+		for directory in directories:
 			self.__sync_directory(directory.strip())
 
 	def _signals_handler(self, signum, frame):
