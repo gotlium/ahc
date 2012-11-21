@@ -258,9 +258,11 @@ class Backup(LockFile):
 		)
 		self.cursor = self.db.cursor()
 		self.cursor.execute("SHOW DATABASES;")
+		exclude = ('mysql', 'information_schema', 'performance_schema')
 		databases = []
 		for row in self.cursor.fetchall():
-			databases.append(row[0])
+			if row[0] not in exclude:
+				databases.append(row[0])
 		return databases
 
 	def __get_all_webites(self):
