@@ -1,3 +1,9 @@
+Apache Host Control v.1.4(ENG)
+
+    New features:
+        Module for backup databases and websites. Support ftp and sftp.
+
+
 Apache Host Control v.1.3(ENG)
 
     New features:
@@ -67,6 +73,13 @@ Apache Host Control v.1.0(ENG)
 
 
 ################################################################################
+
+
+Apache Host Control v.1.4(RUS)
+
+    Новые возможности:
+        Резервное копирование баз данных и сайтов. Поддержка: ftp и sftp.
+
 
 Apache Host Control v.1.3(RUS)
 

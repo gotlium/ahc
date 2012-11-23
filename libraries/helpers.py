@@ -3,10 +3,12 @@ __author__ = 'gotlium'
 from os import getuid, system as osystem, access, W_OK, R_OK
 from subprocess import Popen, STDOUT, PIPE
 from sys import platform, maxsize, exit
+from smtplib import SMTP
 from ctypes import CDLL
 from math import log
-import re
+import xmpp
 import sys
+import re
 
 from fs import getFileArr, getFile, fileExists, putFile, delFile
 
@@ -147,3 +149,51 @@ def is_writable(filename):
 
 def is_readable(filename):
 	return access(filename, R_OK)
+
+from ConfigParser import RawConfigParser
+
+def configs(section):
+	config = RawConfigParser()
+	config.read('configs.cfg')
+	items = {}
+	for item in config.items(section):
+		items[item[0]] = item[1]
+	return items
+
+def xmppMessage(message):
+	config = configs('xmpp')
+	if int(config['enabled']) > 0:
+		jid  = xmpp.protocol.JID(config['user'])
+		jabber = xmpp.Client(jid.getDomain(), debug=[])
+		jabber.connect(('talk.google.com', 5222))
+		jabber.auth(jid.getNode(), config['pass'], config['resource'])
+		jabber.sendInitPresence(requestRoster=1)
+		for email in config['mail_to'].split(','):
+			try:
+				jabber.send(xmpp.Message(email, message))
+			except:
+				pass
+
+def sendmail(subject, message):
+	config = configs('smtp')
+	if not int(config['enabled']):
+		return
+	emails = config['mail_to'].split(',')
+	message = "From: %s\r\n" % config['from_addr']\
+			  + "To: %s\r\n" % emails[0]\
+			  + "CC: %s\r\n" % ",".join(emails)\
+			  + "Subject: %s\r\n" % subject\
+			  + "\r\n"\
+			  + message
+	mail = SMTP(config['host'], config['port'])
+	if config['user']:
+		mail.ehlo()
+		mail.starttls()
+		mail.ehlo()
+		mail.login(config['user'], config['pass'])
+	mail.sendmail(config['from_addr'], emails, message)
+	mail.quit()
+
+def xmppAndMail(subject, message):
+	sendmail(subject, message)
+	xmppMessage(message)
