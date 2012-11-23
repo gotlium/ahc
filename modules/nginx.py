@@ -10,9 +10,18 @@ class Nginx(CoreHttp):
 
 	fastcgi_run_commands = {
 		'php': '/etc/init.d/php5-fpm restart',
-		'django': 'cd %(project_root)s && chmod +x ./manage.py && nohup ./manage.py runfcgi method=prefork \
-socket=%(socket_path)s pidfile=%(pid_path)s >& /dev/null &',
-		'python': 'cd %(project_root)s && chmod +x ./index.py\nnohup ./index.py >& /dev/null &\nPID=$!'
+		'django': 'cd %(project_root)s && chmod +x ./manage.py && nohup '
+				'./manage.py runfcgi method=prefork socket=%(socket_path)s '
+				'pidfile=%(pid_path)s >& /dev/null &',
+		'django-venv': 'cd %(project_root)s && source venv/bin/activate && '
+				'chmod +x ./manage.py && nohup '
+				'./manage.py runfcgi method=prefork socket=%(socket_path)s '
+				'pidfile=%(pid_path)s >& /dev/null &',
+		'python': 'cd %(project_root)s && chmod +x ./index.py\nnohup '
+				  './index.py >& /dev/null &\nPID=$!',
+		'python-venv': 'cd %(project_root)s && source venv/bin/activate && '
+					'chmod +x ./index.py\nnohup ./index.py >& /dev/null&\nPID=$!'
+
 	}
 
 	uwsgi_module = {
@@ -45,12 +54,19 @@ socket=%(socket_path)s pidfile=%(pid_path)s >& /dev/null &',
 
 		if self.base.options.wsgi:
 			config['module'] = self.uwsgi_module[self.type]
-			putFile(
-				self.__getuWSGIHost(),
-				getTemplate('nginx-uwsgi-host') % config
-			)
+			if self.base.options.venv:
+				putFile(
+					self.__getuWSGIHost(),
+					getTemplate('nginx-uwsgi-venv-host') % config
+				)
+			else:
+				putFile(
+					self.__getuWSGIHost(),
+					getTemplate('nginx-uwsgi-host') % config
+				)
 		else:
-			cmd = self.fastcgi_run_commands[self.type] % config
+			postfix = '-venv' if self.base.options.venv else ''
+			cmd = self.fastcgi_run_commands[self.type+postfix] % config
 			config['command_to_run'] = cmd
 			init_file = '/etc/init.d/%s.init' % self.project_name
 			putFile(init_file, getTemplate('nginx-host-runner') % config)

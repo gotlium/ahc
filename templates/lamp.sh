@@ -59,17 +59,33 @@ ufw disable >& /dev/null
 # dpkg-reconfigure exim4-config
 
 # Git protection
-echo "Options -Indexes" >> /etc/apache2/apache2.conf
-echo '<Directory ~ "\.git">' >> /etc/apache2/apache2.conf
-echo '        Order allow,deny' >> /etc/apache2/apache2.conf
-echo '        Deny from all' >> /etc/apache2/apache2.conf
-echo '</Directory>' >> /etc/apache2/apache2.conf
+if [ -z "`cat /etc/apache2/apache2.conf|grep '.git'`" ]; then
+    echo "Options -Indexes" >> /etc/apache2/apache2.conf
+    echo '<Directory ~ "\.git">' >> /etc/apache2/apache2.conf
+    echo '        Order allow,deny' >> /etc/apache2/apache2.conf
+    echo '        Deny from all' >> /etc/apache2/apache2.conf
+    echo '</Directory>' >> /etc/apache2/apache2.conf
+fi
 
-echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf
-echo 'net.ipv6.conf.default.disable_ipv6 = 1' >> /etc/sysctl.conf
-echo 'net.ipv6.conf.lo.disable_ipv6 = 1' >> /etc/sysctl.conf
+if [ -z "`cat /etc/sysctl.conf|grep 'net.ipv6.conf.all.disable_ipv6'`" ]; then
+    echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf
+    echo 'net.ipv6.conf.default.disable_ipv6 = 1' >> /etc/sysctl.conf
+    echo 'net.ipv6.conf.lo.disable_ipv6 = 1' >> /etc/sysctl.conf
+fi
 
 sysctl -p >& /dev/null
 
 #http://security.ubuntu.com/ubuntu/pool/main/v/vsftpd/vsftpd_2.3.2-3ubuntu4.1_i386.deb
 #http://security.ubuntu.com/ubuntu/pool/main/v/vsftpd/vsftpd_2.3.2-3ubuntu4.1_amd64.deb
+
+if [ ! -f "/var/lib/locales/supported.d/en" ] || [ -z "`cat /var/lib/locales/supported.d/en|grep en_US.UTF-8`" ]; then
+    echo "en_US.UTF-8 UTF-8" >> /var/lib/locales/supported.d/en
+fi
+
+if [ -z "$LANG" ]; then
+    locale-gen en_US.UTF-8 >& /dev/null
+    echo "LANG=en_US.UTF-8" >> /etc/environment
+    echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+    export LANG=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+fi
