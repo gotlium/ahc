@@ -4,7 +4,7 @@ __author__ = 'gotlium'
 import unittest
 from configs import Configs
 import grab
-from grab import GrabNetworkError
+from grab.error import GrabNetworkError, GrabConnectionError
 import os
 from time import sleep
 
@@ -115,7 +115,10 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
 		urls = self.__getUrls(host)
 		for url in urls:
 			with self.assertRaises(GrabNetworkError):
-				self.__getPage(url, hammer_mode=False)
+				try:
+					self.__getPage(url, hammer_mode=False)
+				except GrabConnectionError:
+					raise GrabNetworkError('Connection error')
 
 	def _addHost(self, type, host_name, flags='', action='a', cmd_ad_opt=''):
 		execution_code = os.system(

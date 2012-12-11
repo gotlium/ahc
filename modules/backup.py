@@ -218,7 +218,11 @@ class Backup(LockFile):
 			  "--flush-logs=FALSE --dump-date=TRUE --lock-tables=TRUE " \
 			  "--allow-keywords=FALSE --events=FALSE --databases --routines "\
 			  "%(database)s | gzip -c > /tmp/%(database)s.sql.gz"
+		system_by_code('mysql -h %(host)s -u %(user)s -p\'%(password)s\' '
+					   '-e "SET GLOBAL slow_query_log=0"' % self.base.mysql)
 		system_by_code(str(cmd) % dict(self.base.mysql))
+		system_by_code('mysql -h %(host)s -u %(user)s -p\'%(password)s\' '
+					   '-e "SET GLOBAL slow_query_log=1"' % self.base.mysql)
 		return '/tmp/%s.sql.gz' % database
 
 	def __clean_directory(self, directory):
@@ -267,10 +271,12 @@ class Backup(LockFile):
 
 	def __get_all_webites(self):
 		directories = os.listdir(self.base.main['projects_directory'])
-		join = os.path.join
-		return [
-			join(self.base.main['projects_directory'],f) for f in directories
-		]
+		dir_lists = []
+		for f in directories:
+			path = os.path.join(self.base.main['projects_directory'],f)
+			if os.path.isdir(path):
+				dir_lists.append(path)
+		return dir_lists
 
 	def _backup_db(self):
 		if not self.backup['databases']:

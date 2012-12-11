@@ -2,6 +2,7 @@ Before version 2.0 will be released:
     VSFTPD config for version >= 2.3.5
     Nginx / Ruby+RoR support
     Nginx / proxied hosts support
+    Complex add/remove hosts
 
 Sometime:
     OpenVPN configuration

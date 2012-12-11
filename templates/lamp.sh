@@ -4,30 +4,65 @@ REPOMAIL="root@localhost"
 MAILTO="root@localhost"
 
 # Getting all sources list & upgrading system packages
-apt-get update && apt-get upgrade -y
+apt-get update && apt-get upgrade -y && apt-get autoremove
 
-# Ssh key generator
-echo
-ssh-keygen -t rsa -C $REPOMAIL
-cat /root/.ssh/id_rsa.pub
-echo 'Are you copied key?' && read && echo 'OK'
-echo
+if [ ! -f "/root/.ssh/id_rsa.pub" ]; then
+    # Ssh key generator
+    echo
+    ssh-keygen -t rsa -C $REPOMAIL
+    cat /root/.ssh/id_rsa.pub
+    echo 'Are you copied key?' && read && echo 'OK'
+    echo
+fi
 
 # Basic packages
 echo 'Installing basic packages ...'
-apt-get install -y apache2 apache2-mpm-prefork apache2-utils libapache2-mod-python \
-libapache2-mod-php5 php5 php5-cli php5-common php-pear php5-mhash php5-ming \
-php5-pspell php5-recode php5-snmp php5-tidy php5-xmlrpc php5-xsl php5-imap \
-php5-mysql php5-curl php5-sqlite php5-mcrypt php5-imagick php5-gd phpmyadmin \
-ssl-cert python python-mysqldb vsftpd libpam-mysql links php5-dev memcached \
-zip php5-memcache php5-xdebug php5-memcached php5-memcache php-apc git-core mc nginx \
-ssh gcc g++ make tcpdump bash-completion ftp vpnc pkg-config devscripts \
-unrar-free p7zip-full fail2ban subversion sqlite3 wget rsync nano zip unzip \
-iptables xtables-addons-common shtool memcached locate mysql-server mysql-client \
-exim4-config sphinxsearch redis-server python-django php5-fpm libpam-ldap \
-libapache2-mod-ruby libapache2-mod-passenger encfs screen python-redis python-imaging \
-python-dev libxml2-dev libxslt-dev libapache2-mod-wsgi libapache2-mod-rpaf \
-uwsgi uwsgi-plugin-python python-virtualenv bind9 lftp
+
+declare -A PACKAGES
+PACKAGES=(
+    [apache]="apache2 apache2-mpm-prefork libapache2-mod-rpaf apache2-utils"
+    [nginx]="nginx nginx-common nginx-full"
+    [mysql]="mysql-server mysql-client"
+    [python]="libapache2-mod-python python-dev python python-mysqldb python-django python-redis python-imaging uwsgi-plugin-python python-virtualenv ipython libapache2-mod-wsgi uwsgi libxml2-dev libxslt-dev"
+    [php5]="libapache2-mod-php5 php5-dev php5 php5-cli php5-common php-pear php5-mhash php5-ming php5-pspell php5-recode php5-snmp php5-tidy php5-xmlrpc php5-xsl php5-imap php5-mysql php5-curl php5-sqlite php5-mcrypt php5-imagick php5-gd phpmyadmin php5-xdebug php5-memcached php5-memcache php-apc php5-fpm"
+    [ruby]="libapache2-mod-ruby libapache2-mod-passenger"
+    [ftp]="vsftpd libpam-mysql ftp libpam-ldap lftp"
+    [caches]="redis-server memcached"
+    [compilators]="gcc g++ make pkg-config devscripts shtool"
+    [cvs]="git-core subversion mercurial"
+    [archivators]="zip unzip unrar-free p7zip-full"
+    [protection]="iptables xtables-addons-common fail2ban"
+    [utils]="tcpdump bash-completion mc ssl-cert links wget rsync nano locate screen ssh rlwrap encfs sqlite3"
+    [sphinx]="sphinxsearch"
+    [dns]="bind9"
+    [mail]="exim4-config"
+)
+
+CONTAINER=""
+
+read -p "> Install all LAMP packages? You can choice 'n', if you want to select packages. [y/n] " yn
+
+case $yn in
+[Yy]* )
+    for service in "${!PACKAGES[@]}"; do
+        CONTAINER="$CONTAINER ${PACKAGES[$service]}"
+    done
+;;
+* )
+    if [ "${#PACKAGES[*]}" -ne 0 ]; then
+        for service in "${!PACKAGES[@]}"; do
+            read -p ">> Install \"$service\" packages? [y/n] " yn
+            case $yn in
+             [Yy]* )
+                CONTAINER="$CONTAINER ${PACKAGES[$service]}"
+            ;;
+            esac
+        done
+    fi
+;;
+esac
+
+apt-get install -y $CONTAINER --force-yes
 
 echo 'packages installed.'
 sleep 3
@@ -55,8 +90,12 @@ ufw disable >& /dev/null
 # Bash
 /etc/init.d/sysstat restart >& /dev/null
 
-# Reconfiguring exim
-# dpkg-reconfigure exim4-config
+read -p "> Reconfigure exim4-config? [y/n] " yn
+case $yn in
+[Yy]* )
+    dpkg-reconfigure exim4-config
+;;
+esac
 
 # Git protection
 if [ -z "`cat /etc/apache2/apache2.conf|grep '.git'`" ]; then
@@ -75,8 +114,14 @@ fi
 
 sysctl -p >& /dev/null
 
-#http://security.ubuntu.com/ubuntu/pool/main/v/vsftpd/vsftpd_2.3.2-3ubuntu4.1_i386.deb
-#http://security.ubuntu.com/ubuntu/pool/main/v/vsftpd/vsftpd_2.3.2-3ubuntu4.1_amd64.deb
+if [ -z "`dpkg -l vsftpd | grep 2.3.2`" ]; then
+    echo "VSFTP will be re-install."
+    apt-get purge vsftpd -y
+    #http://security.ubuntu.com/ubuntu/pool/main/v/vsftpd/vsftpd_2.3.2-3ubuntu4.1_i386.deb
+    wget http://security.ubuntu.com/ubuntu/pool/main/v/vsftpd/vsftpd_2.3.2-3ubuntu4.1_amd64.deb -O /tmp/vsftpd.deb
+    dpkg -i /tmp/vsftpd.deb
+    echo "vsftpd hold" | dpkg --set-selections
+fi
 
 if [ ! -f "/var/lib/locales/supported.d/en" ] || [ -z "`cat /var/lib/locales/supported.d/en|grep en_US.UTF-8`" ]; then
     echo "en_US.UTF-8 UTF-8" >> /var/lib/locales/supported.d/en
