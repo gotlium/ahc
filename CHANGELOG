@@ -2,6 +2,8 @@ Apache Host Control v.1.4(ENG)
 
     New features:
         Module for backup databases and websites. Support ftp and sftp.
+        Virtualenv (Python, Django)
+        Screenrc / Custom pattern
 
 
 Apache Host Control v.1.3(ENG)
@@ -79,6 +81,7 @@ Apache Host Control v.1.4(RUS)
 
     Новые возможности:
         Резервное копирование баз данных и сайтов. Поддержка: ftp и sftp.
+        Virtualenv (Python, Django)
 
 
 Apache Host Control v.1.3(RUS)

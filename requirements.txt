@@ -3,3 +3,4 @@ flup
 grab
 paramiko
 xmpppy
+virtualenv

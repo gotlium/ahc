@@ -32,7 +32,7 @@ case $yn in
 	rm -rf /etc/uwsgi/apps-*/*
 	rm -f /usr/sbin/sendmail
 	rm /var/log/uwsgi/app/*
-	rm ﻿/etc/vsftpd/vusers/*
+	rm /etc/vsftpd/vusers/*
 	killall -9 uwsgi-core >& /dev/null
 	killall -9 uwsgi >& /dev/null
 

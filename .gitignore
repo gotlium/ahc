@@ -7,4 +7,4 @@ db.sqlite
 *.log
 logfile
 build
-
+modules/shop.py

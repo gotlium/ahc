@@ -4,7 +4,7 @@ __author__ = 'gotlium'
 import unittest
 from configs import Configs
 import grab
-from grab import GrabNetworkError
+from grab.error import GrabNetworkError, GrabConnectionError
 import os
 from time import sleep
 
@@ -37,7 +37,33 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
 		'sub-1.st_django.dev', 'sub-a1.django.dev', 'sub.django.dev',
 	)
 
+
+	django_domains_wsgi = (
+		'django_wsgi.dev', 'a-django_wsgi.dev'
+	)
+
+	django_domains_venv = (
+		'django_venv.dev', 'a-django_venv.dev'
+	)
+
+	django_domains_wsgi_venv = (
+		'django_wv.dev', 'a-django_wv.dev'
+	)
+
+	python_domains_wsgi = (
+		'python_wsgi.dev', 'a-python_wsgi.dev'
+	)
+
+	python_domains_venv = (
+		'python_venv.dev', 'a-python_venv.dev'
+	)
+
+	python_domains_wsgi_venv = (
+		'python_wv.dev', 'a-python_wv.dev'
+	)
+
 	web_server = 'apache'
+
 
 	def setUp(self):
 		self.loadConfigs()
@@ -89,42 +115,46 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
 		urls = self.__getUrls(host)
 		for url in urls:
 			with self.assertRaises(GrabNetworkError):
-				self.__getPage(url, hammer_mode=False)
+				try:
+					self.__getPage(url, hammer_mode=False)
+				except GrabConnectionError:
+					raise GrabNetworkError('Connection error')
 
-	def _addHost(self, type, host_name, flags='', action='a'):
+	def _addHost(self, type, host_name, flags='', action='a', cmd_ad_opt=''):
 		execution_code = os.system(
-			'ahc -m %s -t %s -%s %s %s -y 1> /dev/null' % \
-				  (self.web_server, type, action, host_name, flags))
+			'ahc -m %s -t %s -%s %s %s %s -y 1> /dev/null' % \
+				  (self.web_server, type, action, host_name, flags, cmd_ad_opt)
+		)
 		self.assertEquals(execution_code, 0)
 
-	def _delHost(self, type, host_name, flags=''):
-		self._addHost(type, host_name, flags, 'd')
+	def _delHost(self, type, host_name, flags='', cmd_ad_opt=''):
+		self._addHost(type, host_name, flags, 'd', cmd_ad_opt)
 
-	def _enableHost(self, type, host_name, flags=''):
-		self._addHost(type, host_name, flags, 'e')
+	def _enableHost(self, type, host_name, flags='', cmd_ad_opt=''):
+		self._addHost(type, host_name, flags, 'e', cmd_ad_opt)
 
-	def _disableHost(self, type, host_name, flags=''):
-		self._addHost(type, host_name, flags, 'f')
+	def _disableHost(self, type, host_name, flags='', cmd_ad_opt=''):
+		self._addHost(type, host_name, flags, 'f', cmd_ad_opt)
 
 
-	def _add_host_test(self, type, domains, check_line):
+	def _add_host_test(self, type, domains, check_line, cmd_ad_opt=""):
 		for domain in domains:
-			self._addHost(type, domain)
+			self._addHost(type, domain, cmd_ad_opt)
 			self._checkHostFound(domain, check_line)
 
-	def _disable_host_test(self, type, domains):
+	def _disable_host_test(self, type, domains, cmd_ad_opt=""):
 		for domain in domains:
-			self._disableHost(type, domain)
+			self._disableHost(type, domain, cmd_ad_opt)
 			self._checkHostNotFound(domain)
 
-	def _enable_host_test(self, type, domains, check_line):
+	def _enable_host_test(self, type, domains, check_line, cmd_ad_opt=""):
 		for domain in domains:
-			self._enableHost(type, domain)
+			self._enableHost(type, domain, cmd_ad_opt)
 			self._checkHostFound(domain, check_line)
 
-	def _remove_host_test(self, type, domains):
+	def _remove_host_test(self, type, domains, cmd_ad_opt=""):
 		for domain in domains:
-			self._delHost(type, domain)
+			self._delHost(type, domain, cmd_ad_opt)
 			self._checkHostNotFound(domain)
 
 
@@ -252,4 +282,142 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
 	def test_h_remove_django_host(self):
 		self._remove_host_test(
 			'django', self.django_domains
+		)
+
+
+	# WSGI
+	def test_a_add_django_host_wsgi(self):
+		self._add_host_test(
+			'django', self.django_domains_wsgi, "It worked!", '-w'
+		)
+
+	def test_c_disable_django_host_wsgi(self):
+		self._disable_host_test(
+			'django', self.django_domains_wsgi, '-w'
+		)
+
+	def test_e_enable_django_host_wsgi(self):
+		self._enable_host_test(
+			'django', self.django_domains_wsgi, "It worked!", '-w'
+		)
+
+	def test_h_remove_django_host_wsgi(self):
+		self._remove_host_test(
+			'django', self.django_domains_wsgi, '-w'
+		)
+
+
+	# Virtual env
+	def test_a_add_django_host_venv(self):
+		self._add_host_test(
+			'django', self.django_domains_venv, "It worked!", '-v'
+		)
+
+	def test_c_disable_django_host_venv(self):
+		self._disable_host_test(
+			'django', self.django_domains_venv, '-v'
+		)
+
+	def test_e_enable_django_host_venv(self):
+		self._enable_host_test(
+			'django', self.django_domains_venv, "It worked!", '-v'
+		)
+
+	def test_h_remove_django_host_venv(self):
+		self._remove_host_test(
+			'django', self.django_domains_venv, '-v'
+		)
+
+
+	# Virtual env + WSGI
+	def test_a_add_django_host_wsgi_venv(self):
+		self._add_host_test(
+			'django', self.django_domains_wsgi_venv, "It worked!", '-v -w'
+		)
+
+	def test_c_disable_django_host_wsgi_venv(self):
+		self._disable_host_test(
+			'django', self.django_domains_wsgi_venv, '-v -w'
+		)
+
+	def test_e_enable_django_host_wsgi_venv(self):
+		self._enable_host_test(
+			'django', self.django_domains_wsgi_venv, "It worked!", '-v -w'
+		)
+
+	def test_h_remove_django_host_wsgi_venv(self):
+		self._remove_host_test(
+			'django', self.django_domains_wsgi_venv, '-v -w'
+		)
+
+
+
+	# WSGI
+	def test_a_add_python_host_wsgi(self):
+		self._add_host_test(
+			'python', self.python_domains_wsgi, 'PythonWSGI:Hello, World!', '-w'
+		)
+
+	def test_c_disable_python_host_wsgi(self):
+		self._disable_host_test(
+			'python', self.python_domains_wsgi, '-w'
+		)
+
+	def test_e_enable_python_host_wsgi(self):
+		self._enable_host_test(
+			'python', self.python_domains_wsgi,
+			'PythonWSGI:Hello, World!', '-w'
+		)
+
+	def test_h_remove_python_host_wsgi(self):
+		self._remove_host_test(
+			'python', self.python_domains_wsgi, '-w'
+		)
+
+
+	# Virtual env
+	def test_a_add_python_host_venv(self):
+		self._add_host_test(
+			'python', self.python_domains_venv,
+			'Python:Hello, World!', '-v'
+		)
+
+	def test_c_disable_python_host_venv(self):
+		self._disable_host_test(
+			'python', self.python_domains_venv, '-v'
+		)
+
+	def test_e_enable_python_host_venv(self):
+		self._enable_host_test(
+			'python', self.python_domains_venv,
+			'Python:Hello, World!', '-v'
+		)
+
+	def test_h_remove_python_host_venv(self):
+		self._remove_host_test(
+			'python', self.python_domains_venv, '-v'
+		)
+
+
+	# Virtual env + WSGI
+	def test_a_add_python_host_wsgi_venv(self):
+		self._add_host_test(
+			'python', self.python_domains_wsgi_venv,
+			'PythonWSGI:Hello, World!', '-v -w'
+		)
+
+	def test_c_disable_python_host_wsgi_venv(self):
+		self._disable_host_test(
+			'python', self.python_domains_wsgi_venv, '-v -w'
+		)
+
+	def test_e_enable_python_host_wsgi_venv(self):
+		self._enable_host_test(
+			'python', self.python_domains_wsgi_venv,
+			'PythonWSGI:Hello, World!', '-v -w'
+		)
+
+	def test_h_remove_python_host_wsgi_venv(self):
+		self._remove_host_test(
+			'python', self.python_domains_wsgi_venv, '-v -w'
 		)

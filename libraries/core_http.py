@@ -29,6 +29,24 @@ class CoreHttp(HostPath):
 			getattr(self, '_%s' % method)(*args, **kwargs)
 		return find_method
 
+	def __install_virtual_env(self, root, project, is_django=True):
+		system_by_code(
+			'cd %s && mkdir venv && virtualenv --no-site-packages '
+			'--prompt="(%s)" venv' % (root, project)
+		)
+		if is_django:
+			system_by_code(
+				'cd %s && source venv/bin/activate && pip install django && '
+				'deactivate' % root
+			)
+		if self.base.options.venv and not self.base.options.wsgi and\
+		   self.base.options.module == 'nginx':
+			system_by_code(
+				'cd %s && source venv/bin/activate && pip install flup && '
+				'deactivate' % root
+			)
+		return system("find %s/venv/ -type d -name 'site-packages'" % root)[0]
+
 	def __createBasicAuthFile(self, filename, user, password):
 		user = user.strip()
 		password = password.strip()
@@ -49,7 +67,14 @@ class CoreHttp(HostPath):
 		return ""
 
 	def __getTemplate(self, template, ext='conf'):
-		if self.base.options.wsgi:
+		if self.base.options.venv and not self.base.options.wsgi and \
+				self.base.options.module == 'apache':
+			filename = 'templates/%s-%s-mod_python-venv.%s' %\
+					   (self.web_server, template, ext)
+			if not fileExists(filename):
+				error_message('VirtualEnv not supported for current type!')
+			return getFile(filename)
+		elif self.base.options.wsgi:
 			filename = 'templates/%s-%s-wsgi.%s' % \
 					   (self.web_server, template, ext)
 			if not fileExists(filename):
@@ -84,11 +109,29 @@ class CoreHttp(HostPath):
 		else:
 			error_message('Type not supported!')
 		self.project_root = data['website_dir']
+		project = self.__get_project_name(host_name)
+		venv = ""
+		if self.base.options.venv:
+			venv = self.__install_virtual_env(
+				self.project_root, host_name, False
+			)
+			if self.base.options.module == 'apache':
+				if self.base.options.wsgi:
+					venv = ":%s" % venv
+				else:
+					putFile('%s/%s.py' % (self.project_root, project), """
+activate_this = '%s/venv/bin/activate_this.py'
+execfile(activate_this, dict(__file__=activate_this))
+
+from index import *
+					""" % self.project_root)
 		config = {
 			'port': self.config['port'],
 			'hostname': host_name,
 			'root': data['website_dir'],
 			'ssl_section': '',
+			'venv': venv,
+			'project': project,
 			'optimize': self.__optimizationTemplate(),
 			'socket_path': self.socket_path,
 			'pid_path': self.pid_path,
@@ -151,21 +194,42 @@ class CoreHttp(HostPath):
 		except Exception:
 			error_message("Can't change permissions to directory!")
 
+
+	def __get_project_name(self, host_name):
+		project = host_name.replace('-','_').replace('.', '_')
+		return re.sub('([^a-z0-9_])+', '', project)
+
 	def _setup_django(self, host_name, data, files):
 		self.project_root = data['website_dir']
 		bin = self.base.main['bin_django_admin']
+		project = self.__get_project_name(host_name)
 
 		if fileExists('/tmp/new_django_project'):
 			system_by_code('rm -rf /tmp/new_django_project')
 		system_by_code('cd /tmp/ && %s startproject new_django_project' % bin)
 		system_by_code('mv /tmp/new_django_project/* %s/' % self.project_root)
 
+		venv = ""
+		if self.base.options.venv:
+			venv = self.__install_virtual_env(self.project_root, project)
+			if self.base.options.module == 'apache':
+				if self.base.options.wsgi:
+					venv = ":%s" % venv
+				else:
+					putFile('%s/%s.py' % (self.project_root, project), """
+activate_this = '%s/venv/bin/activate_this.py'
+execfile(activate_this, dict(__file__=activate_this))
+
+from django.core.handlers.modpython import handler
+					""" % self.project_root)
+
 		config = {
 			'port': self.config['port'],
 			'hostname': host_name,
 			'root': self.project_root,
-			'project_name': 'new_django_project',
+			'project_name': project,
 			'ssl_section': '',
+			'venv': venv,
 			'projects_dir': self.base.main['projects_directory'],
 			'optimize': self.__optimizationTemplate(),
 			'socket_path': self.socket_path,
@@ -213,8 +277,9 @@ class CoreHttp(HostPath):
 			error_message("Error, when trying to change hosts data!")
 
 	def _add(self, host_name):
-		if not self.type:
-			error_message('Type is not set!')
+		if not hasattr(self, '_setup_%s' % self.type):
+			error_message("Please, check your command line arguments!")
+
 		isHost(host_name)
 		data = self.getHostData(host_name)
 		files = self.getHostFiles(host_name, self.type, self.web_server)
@@ -228,8 +293,6 @@ class CoreHttp(HostPath):
 		os.mkdir(data['website_dir'], 0755)
 
 		self.__setSocketAndPidPath(host_name)
-		if not hasattr(self, '_setup_%s' % self.type):
-			error_message("Please, check your command line arguments!")
 		method = self.__getattribute__('_setup_%s' % self.type)
 		method(host_name, data, files)
 		self.__siteSetActive(host_name, True)
