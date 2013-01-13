@@ -4,7 +4,7 @@ REPOMAIL="root@localhost"
 MAILTO="root@localhost"
 
 # Getting all sources list & upgrading system packages
-apt-get update && apt-get upgrade -y && apt-get autoremove
+apt-get update && apt-get upgrade -y && apt-get autoremove -y
 
 if [ ! -f "/root/.ssh/id_rsa.pub" ]; then
     # Ssh key generator
@@ -21,20 +21,21 @@ echo 'Installing basic packages ...'
 declare -A PACKAGES
 PACKAGES=(
     [apache]="apache2 apache2-mpm-prefork libapache2-mod-rpaf apache2-utils"
+    [apache-security]="libapache-mod-security libapache2-mod-evasive"
     [nginx]="nginx nginx-common nginx-full"
-    [mysql]="mysql-server mysql-client"
+    [mysql]="mysql-server mysql-client libmysqlclient-dev"
     [python]="libapache2-mod-python python-dev python python-mysqldb python-django python-redis python-imaging uwsgi-plugin-python python-virtualenv ipython libapache2-mod-wsgi uwsgi libxml2-dev libxslt-dev"
-    [php5]="libapache2-mod-php5 php5-dev php5 php5-cli php5-common php-pear php5-mhash php5-ming php5-pspell php5-recode php5-snmp php5-tidy php5-xmlrpc php5-xsl php5-imap php5-mysql php5-curl php5-sqlite php5-mcrypt php5-imagick php5-gd phpmyadmin php5-xdebug php5-memcached php5-memcache php-apc php5-fpm"
-    [ruby]="libapache2-mod-ruby libapache2-mod-passenger"
+    [php5]="libapache2-mod-php5 php5-dev php5 php5-cli php5-common php5-suhosin php-pear php5-mhash php5-ming php5-pspell php5-recode php5-snmp php5-tidy php5-xmlrpc php5-xsl php5-imap php5-mysql php5-curl php5-sqlite php5-mcrypt php5-imagick php5-gd phpmyadmin php5-xdebug php5-memcached php5-memcache php-apc php5-fpm"
+    [ruby]="libapache2-mod-ruby libapache2-mod-passenger ruby build-essential ruby1.8-dev rubygems libfcgi-dev nodejs libsqlite3-dev libmysql-ruby rubygems"
     [ftp]="vsftpd libpam-mysql ftp libpam-ldap lftp"
     [caches]="redis-server memcached"
     [compilators]="gcc g++ make pkg-config devscripts shtool"
     [cvs]="git-core subversion mercurial"
     [archivators]="zip unzip unrar-free p7zip-full"
     [protection]="iptables xtables-addons-common fail2ban"
-    [utils]="tcpdump bash-completion mc ssl-cert links wget rsync nano locate screen ssh rlwrap encfs sqlite3"
+    [utils]="tcpdump bash-completion mc ssl-cert links wget rsync nano locate screen ssh rlwrap encfs sqlite3 tree curl"
     [sphinx]="sphinxsearch"
-    [dns]="bind9"
+    [dns]="bind9 dnsutils"
     [mail]="exim4-config"
 )
 
@@ -97,6 +98,13 @@ case $yn in
 ;;
 esac
 
+read -p "> Install .bashrc or .zhsrc? [y/n] " yn
+case $yn in
+[Yy]* )
+    ahc -m install -s shell
+;;
+esac
+
 # Git protection
 if [ -z "`cat /etc/apache2/apache2.conf|grep '.git'`" ]; then
     echo "Options -Indexes" >> /etc/apache2/apache2.conf
@@ -134,3 +142,22 @@ if [ -z "$LANG" ]; then
     export LANG=en_US.UTF-8
     export LC_ALL=en_US.UTF-8
 fi
+
+CONFIGS_LIST="apache2_ssl nginx_ssl ftp bind mysql firewall nginx_proxy certs sendmail mail jira confluence web"
+
+read -p "> Do you want to install ahc services configuration? [y/n] " yn
+case $yn in
+[Yy]* )
+    for conf in $CONFIGS_LIST; do
+        read -p ">> Install \"$conf\"? [y/n] " yn
+        case $yn in
+         [Yy]* )
+            ahc -m install -s $conf
+        ;;
+        esac
+
+    done
+;;
+esac
+
+exit 0

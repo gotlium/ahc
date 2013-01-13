@@ -274,7 +274,7 @@ class Install(object):
 			error_message('Confluence was installed!')
 
 		for i in range(3):
-			input = raw_input('Enter basic domain name: ')
+			input = raw_input('Enter basic domain name (example.com): ')
 			if isValidHostname(input):
 				domain = input
 				break
@@ -302,10 +302,9 @@ class Install(object):
 		system_by_code('%s proxy_http >& /dev/null' % self.base.apache2['bin_a2enmod'])
 		os.chdir('/usr/src/')
 
-		system_by_code( 'http://www.atlassian.com/software/confluence/downloads/'
-						'binary/atlassian-confluence-4.3.1-x64.bin')
-		system_by_code('chmod +x atlassian-confluence-4.3.1-x64.bin')
-		os.system('./atlassian-confluence-4.3.1-x64.bin')
+		system_by_code('wget %s -O confluence.bin' % self.base.links['confluence_url'])
+		system_by_code('chmod +x confluence.bin')
+		os.system('./confluence.bin')
 
 		putFile(
 			self.base.apache2['sites_available'] + '/confluence.conf', template
@@ -361,10 +360,9 @@ class Install(object):
 		system_by_code('%s proxy_http >& /dev/null' % self.base.apache2['bin_a2enmod'])
 		os.chdir('/usr/src/')
 
-		system_by_code('wget http://www.atlassian.com/software/jira/downloads'
-						'/binary/atlassian-jira-5.1.6-x64.bin')
-		system_by_code('chmod +x atlassian-jira-5.1.6-x64.bin')
-		os.system('./atlassian-jira-5.1.6-x64.bin')
+		system_by_code('wget %s -O jira.bin' % self.base.links['jira_url'])
+		system_by_code('chmod +x jira.bin')
+		os.system('./jira.bin')
 
 		putFile(
 			self.base.apache2['sites_available'] + '/jira.conf', template
@@ -426,12 +424,15 @@ class Install(object):
 		if gethostname() != hostname:
 			error_message("Can't set hostname!")
 
+		url = self.base.links['i_red_mail_url']
+		filename = os.path.basename(url)
+		directory = filename.split('.tar')[0]
 		os.chdir('/usr/src/')
-		system_by_code('wget https://bitbucket.org/zhb/iredmail/downloads/iRedMail-0.8.2.tar.bz2')
-		system_by_code('tar jxvf iRedMail-0.8.2.tar.bz2')
-		os.chdir('/usr/src/iRedMail-0.8.2/pkgs/')
+		system_by_code('wget %s' % url)
+		system_by_code('tar jxvf %s' % filename)
+		os.chdir('/usr/src/%s/pkgs/' % directory)
 		system_by_code('/bin/bash get_all.sh')
-		os.chdir('/usr/src/iRedMail-0.8.2/')
+		os.chdir('/usr/src/%s/' % directory)
 
 		info_message('INSTRUCTION: ', 'cyan')
 		info_message('Default mail storage path: /var/vmail')
