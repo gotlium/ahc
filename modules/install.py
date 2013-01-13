@@ -46,6 +46,11 @@ class Install(object):
 		if fileExists(filename):
 			backFile(filename)
 		putFile(filename, getTemplate('screenrc'))
+		# gitconfig
+		filename = '%s/.gitconfig' % home
+		if fileExists(filename):
+			backFile(filename)
+		putFile(filename, getTemplate('gitconfig'))
 		info_message('Shell config for "%s" successfully installed.' % shell)
 
 	def mysql(self):

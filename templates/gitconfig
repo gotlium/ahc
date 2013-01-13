@@ -1,0 +1,4 @@
+[core]
+        editor = nano -f
+[color]
+        ui = true
