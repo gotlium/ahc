@@ -20,7 +20,7 @@ class Certs(CertificateGenerator):
 			if data:
 				info_message('Certificate for "%s" was successfully installed.' % email)
 				info_message('User password: %s' % data['password'], 'white')
-				info_message('User certificate file: %s' % data['certfile'], 'white')
+				info_message('User certificate file: %s' % data['p12'], 'white')
 			else:
 				error_message("Can't add new user!")
 		except Exception, msg:

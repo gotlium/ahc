@@ -1,6 +1,6 @@
 __author__ = 'gotlium'
 
-from os import mkdir, chdir
+from os import mkdir, chdir, makedirs
 import random
 import string
 from datetime import datetime
@@ -16,10 +16,25 @@ class CertificateGenerator(object):
 	client_cert_p12 = 'client%s.p12'
 
 	def __init__(self, config):
+		self.__setConfig(config)
+
+	def __setConfig(self, config):
 		self.config = config
-		for key, val in config.apache_cert.items():
+		domain = config.options.ip
+		isHost(domain)
+		conf = config.apache_cert
+		conf['common_name'] = domain
+		conf['cert_directory'] = '%s/%s' % (conf['cert_directory'], domain)
+		conf['config_file'] = '%s/%s' % (conf['cert_directory'], conf['config_file'])
+
+		for key, val in conf.items():
 			self.__setattr__(key, val)
 		self.openssl = config.main['bin_openssl']
+
+	def __makeDir(self):
+		db_dir = self.config.apache_cert['cert_directory']
+		if not fileExists(db_dir):
+			makedirs(db_dir, 0755)
 
 	def __getRand(self, size=6, chars=string.ascii_uppercase + string.digits):
 		return ''.join(random.choice(chars) for x in range(size))
@@ -40,7 +55,7 @@ class CertificateGenerator(object):
 
 	def createDatabase(self):
 		if not fileExists(self.cert_directory):
-			mkdir(self.cert_directory)
+			self.__makeDir()
 
 		chdir(self.cert_directory)
 
@@ -135,7 +150,11 @@ emailAddress	= supplied
 		system_by_code('%s pkcs12 -export -in %s -inkey %s -certfile %s -out %s -passout pass:%s >& /dev/null' %
 			   (self.openssl, crt, keyout, self.certificate, p12, password))
 
-		return {'password': password, 'certfile': '%s/%s' % (self.cert_directory, crt)}
+		return {
+			'password': password,
+			'certfile': '%s/%s' % (self.cert_directory, crt),
+			'p12': '%s/%s' % (self.cert_directory, p12),
+		}
 
 	def delClient(self, email):
 		clients = self.getClients(False)

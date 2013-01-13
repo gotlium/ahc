@@ -163,8 +163,8 @@ Bind9
 --------------------------------------------------------------
 Сертификаты
 --------------------------------------------------------------
-# ahc -m certs -a email-address
-# ahc -m certs -d email-address
+# ahc -m certs -a email-address -i example.com
+# ahc -m certs -d email-address -i example.com
 # ahc -m certs -l
 --------------------------------------------------------------
 
@@ -192,7 +192,7 @@ Bind9
 # ahc -m install -s mysql
 # ahc -m install -s firewall
 # ahc -m install -s nginx_proxy
-# ahc -m install -s certs
+# ahc -m install -s certs -i example.com
 # ahc -m install -s lighttpd
 # ahc -m install -s sendmail
 # ahc -m install -s shell

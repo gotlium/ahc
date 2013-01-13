@@ -1,10 +1,13 @@
 __author__ = 'gotlium'
 
+
 from os import chmod
 
+from libraries.apache import CertificateGenerator
 from libraries.core_http import CoreHttp
 from libraries.helpers import *
 from libraries.fs import *
+
 
 class Nginx(CoreHttp):
 
@@ -31,7 +34,21 @@ class Nginx(CoreHttp):
 
 	def __init__(self, base, web_server='nginx'):
 		CoreHttp.__init__(self, base, web_server)
-		self.ssl_template = 'include	%s;' % self.base.nginx['ssl_conf']
+		self.__setSslTemplate()
+
+	def __setSslTemplate(self):
+		if self.base.options.protection:
+			self.base.options.ip = self.base.options.add
+			generator = CertificateGenerator(self.base)
+
+			config = {}
+			config.update(self.base.nginx)
+			config.update(self.base.main)
+			config.update(generator.config.apache_cert)
+
+			self.ssl_template = getTemplate('nginx-ssl-cert') % config
+		else:
+			self.ssl_template = 'include	%s;' % self.base.nginx['ssl_conf']
 
 	def __getuWSGIHost(self):
 		return '%s/%s.ini' % (self.base.uwsgi['sites_available'],
