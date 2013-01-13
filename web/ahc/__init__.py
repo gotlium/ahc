@@ -1,4 +1,7 @@
+from subprocess import Popen, STDOUT, PIPE
 from django.db.models import signals
+from django.conf import settings
+import shutil
 import os
 
 from models import *
@@ -10,6 +13,8 @@ def host_after_add(sender, instance, created, **kwargs):
 		)
 		if instance.static:
 			cmd += ' -o'
+		if instance.ssl_certs:
+			cmd += ' -x'
 		if instance.username and instance.password:
 			cmd += ' -b %s:%s' % (instance.username, instance.password)
 		os.system(cmd)
@@ -59,11 +64,42 @@ def mysql_after_add(sender, instance, created, **kwargs):
 		)
 		os.system(cmd)
 
+def ssl_after_add(sender, instance, created, **kwargs):
+	if created:
+		config = RawConfigParser()
+		config.read('../configs.cfg')
+		db_folder = config.get('apache_cert', 'cert_directory')
+		domain = instance.host.name
+		if not os.path.exists('%s/%s' % (db_folder, domain)):
+			os.system('ahc -m install -s certs -i %s' % domain)
+		try:
+			cmd = 'ahc -m certs -a %s -i %s' % (instance.email, domain)
+			p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT)
+			data = p.communicate()[0].strip().split('\n')
+			certificate = data[2].split(':')[1].strip().split('.p12')[0] + '.p12'
+			new_path = 'certs/%s' % os.path.basename(certificate)
+			instance.password = data[1].split(':')[1].strip()
+			instance.p12 = new_path
+			instance.save()
+			shutil.copy(certificate, '%s/%s' % (settings.MEDIA_ROOT, new_path))
+			server = instance.host.server.replace('apache', 'apache2')
+			os.system('/etc/init.d/%s restart' % server)
+		except:
+			instance.delete()
+
 def mysql_after_delete(sender, instance, **kwargs):
 	cmd = 'ahc -m mysql -d %s -u %s -p %s -y' % (
-		instance.db_name, instance.db_user, instance.db_pass
+	instance.db_name, instance.db_user, instance.db_pass
 	)
 	os.system(cmd)
+
+def ssl_after_delete(sender, instance, **kwargs):
+	cmd = 'ahc -m certs -d %s -i %s' % (instance.email, instance.host.name)
+	if instance.p12:
+		os.unlink('%s/%s' % (settings.MEDIA_ROOT, instance.p12))
+	server = instance.host.server.replace('apache', 'apache2')
+	os.system(cmd)
+	os.system('/etc/init.d/%s restart' % server)
 
 
 def git_after_save(instance, current):
@@ -104,6 +140,9 @@ signals.post_save.connect(
 signals.post_save.connect(
 	mysql_after_add, MySQL, dispatch_uid="ahc.__init__"
 )
+signals.post_save.connect(
+	ssl_after_add, SSL, dispatch_uid="ahc.__init__"
+)
 
 signals.post_delete.connect(
 	host_after_delete, Host, dispatch_uid="ahc.__init__"
@@ -116,6 +155,9 @@ signals.pre_delete.connect(
 )
 signals.post_delete.connect(
 	dns_after_delete, DNS, dispatch_uid="ahc.__init__"
+)
+signals.post_delete.connect(
+	ssl_after_delete, SSL, dispatch_uid="ahc.__init__"
 )
 
 signals.pre_save.connect(

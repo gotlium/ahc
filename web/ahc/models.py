@@ -50,6 +50,7 @@ class Host(DatesModel):
 		default='default')
 	static = models.BooleanField('Static tune', default=True)
 	git = models.BooleanField('GIT repository', default=True)
+	ssl_certs = models.BooleanField('Client-side SSL', default=False)
 	username = models.CharField('Login', blank=True, null=True, max_length=16)
 	password = models.CharField('Password', blank=True, null=True, max_length=16)
 	status = models.BooleanField('availability status', default = True,
@@ -98,6 +99,20 @@ class DNS(DatesModel):
 		ordering = ['-id']
 		verbose_name = 'Dns record'
 		verbose_name_plural = 'DNS'
+
+
+class SSL(DatesModel):
+	email = models.EmailField('Email', unique=True)
+	password = models.CharField('Client password', blank=True, null=True,
+		max_length=6)
+	p12 = models.FileField('Client certificate', upload_to='certs',
+		blank=True, null=True)
+	host = models.ForeignKey(Host, editable=False)
+
+	class Meta:
+		ordering = ['-id']
+		verbose_name = 'Client-side SSL'
+		verbose_name_plural = 'Client-side SSL'
 
 '''
 class AhcPreferences(Preferences):

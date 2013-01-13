@@ -27,12 +27,18 @@ class DNSInline(admin.TabularInline):
 	form = DNSAdminForm
 
 
+class SSLInline(admin.TabularInline):
+	extra = 1
+	model = SSL
+	form = SSLAdminForm
+
+
 class HostAdmin(admin.ModelAdmin):
 	fieldsets = [
 		('Basic', {'fields': ['name']}),
 		('Auth', {'fields': ['username', 'password']}),
 		('WebServer', {'fields': ['server','server_type','server_module',
-								  'static','status']}),
+								  'ssl_certs', 'static','status']}),
 		('Additionally', {'fields': ['git']}),
 	]
 	list_filter = (
@@ -47,13 +53,13 @@ class HostAdmin(admin.ModelAdmin):
 	ordering = ('id',)
 	list_per_page = 10
 
-	inlines = [MySQLInline, FTPInline, DNSInline]
+	inlines = [MySQLInline, FTPInline, DNSInline, SSLInline]
 
 	def get_readonly_fields(self, request, obj=None):
 		if obj is not None:
 			return self.readonly_fields + (
 				'name','server', 'server_type', 'server_module',
-				'static', 'username', 'password',
+				'static', 'ssl_certs', 'username', 'password',
 			)
 		return self.readonly_fields
 

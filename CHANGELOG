@@ -3,6 +3,7 @@ Apache Host Control v.1.5(ENG)
     New features:
         Multiple client-side SSL.
         Nginx / Client-side SSL support
+        Web / Client-side SSL
 
     Fixes:
         Php / FastCGI path to unix socket
@@ -90,6 +91,7 @@ Apache Host Control v.1.5(RUS)
     Новые возможности:
         Мульти поддержка клиентских SSL сертификатов
         Nginx / поддержка клиентских SSL сертификатов
+        Web / поддержка клиентских SSL сертификатов
 
     Исправления:
         Php / FastCGI путь к unix socket

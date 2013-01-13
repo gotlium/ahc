@@ -20,6 +20,10 @@ class FTPAdminForm(AbstractAdminForm):
 class DNSAdminForm(AbstractAdminForm):
 	check_field = 'domain'
 
+
+class SSLAdminForm(AbstractAdminForm):
+	check_field = 'email'
+
 '''
 class PreferencesAdminForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
