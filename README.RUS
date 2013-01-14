@@ -163,9 +163,16 @@ Bind9
 --------------------------------------------------------------
 Сертификаты
 --------------------------------------------------------------
-# ahc -m certs -a email-address -i example.com
-# ahc -m certs -d email-address -i example.com
-# ahc -m certs -l
+# ahc -m certs -i example.com -a email-address
+# ahc -m certs -i example.com -d email-address
+# ahc -m certs -i example.com -l
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+OpenVPN
+--------------------------------------------------------------
+# ahc -m vpn -a client1
+# ahc -m vpn -d client1
 --------------------------------------------------------------
 
 --------------------------------------------------------------
@@ -199,6 +206,7 @@ Bind9
 # ahc -m install -s mail
 # ahc -m install -s jira
 # ahc -m install -s web
+# ahc -m install -s vpn
 # ahc -m install -s all
 --------------------------------------------------------------
 

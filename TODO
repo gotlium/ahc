@@ -1,13 +1,12 @@
 Before version 2.0 will be released:
+    Git / access to isolated directory
     VSFTPD config for version >= 2.3.5
     Nginx / Ruby+RoR support
     Nginx / proxied hosts support
     Complex add/remove hosts
 
 Sometime:
-    OpenVPN configuration
     If main domain was removed, sub domain can't be removed.
     List of all created websites/domains/ftp accounts & etc.
     SSL Options for real certificates(apache & nginx).
-    auto detect - how many cpu need for nginx, uwsgi & another services ...
-
+    auto detect - cpu, memory & etc

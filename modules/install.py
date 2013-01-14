@@ -557,18 +557,6 @@ class Install(object):
 		info_message('Web application was successfully installed.')
 
 	def vpn(self):
-		pass
-		'''
-		config to /etc/openvpn/server.conf
-		cd  /usr/share/doc/openvpn/examples/easy-rsa/2.0
-		bash
-		. ./vars
-		./clean-all
-		./build-ca
-		./build-key-server server
-		./build-dh
-		cp ca.crt /etc/openvpn/ca.crt
-		cp server.crt /etc/openvpn/server.crt
-		cp dh1024.pem /etc/openvpn/dh1024.pem
-		cp server.key /etc/openvpn/server.key
-		'''
+		system_by_code('cp ./templates/ovpn_server.conf /etc/openvpn/')
+		system_by_code('/bin/bash "./templates/ovpn_install.sh"')
+		info_message('OpenVPN successfully installed.')
