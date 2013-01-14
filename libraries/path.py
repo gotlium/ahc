@@ -22,7 +22,7 @@ class HostPath(object):
 			website_dir = "%s/%s" % (domain_dir, website_folder)
 			is_subdomain = True
 		else:
-			error_message('Host name is not valid!')
+			error_message('Host name is not valid or path do not exists!')
 		return {
 			'domain_dir': domain_dir,
 			'website_dir': website_dir,

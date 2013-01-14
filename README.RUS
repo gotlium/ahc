@@ -77,6 +77,16 @@ Git deployment:
 --------------------------------------------------------------
 
 --------------------------------------------------------------
+Git jail:
+--------------------------------------------------------------
+ahc -m git_jail -a mail@example.com -p ID-RSA-PUB-STR
+ahc -m git_jail -d mail@example.com
+ahc -m git_jail -l
+
+ahc -m git_jail -i example.com -e templates -u mail@example.com
+ahc -m git_jail -i example.com -f templates -u mail@example.com
+
+--------------------------------------------------------------
 Шифрование директории проекта на локальной машине:
 --------------------------------------------------------------
 # ahc -m crypt -a mount

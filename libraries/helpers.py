@@ -6,6 +6,8 @@ from sys import platform, maxsize, exit
 from smtplib import SMTP
 from ctypes import CDLL
 from math import log
+import base64
+import struct
 import xmpp
 import sys
 import re
@@ -102,6 +104,20 @@ def isValidHostname(hostname):
 	allowed = re.compile("(?!-)[A-Z_\d-]{1,63}(?<!-)$", re.IGNORECASE)
 	return all(allowed.match(x) for x in hostname.split("."))
 
+def isValidMail(email):
+	email_re = re.compile(
+		r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom
+		r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|\\[\001-011\013\014\016-\177])*"' # quoted-string
+		r')@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?$', re.IGNORECASE)  # domain
+	return True if email_re.match(email) else False
+
+def isValidSshPublicKey(openssh_pubkey):
+	type, key_string, comment = openssh_pubkey.split()
+	data = base64.decodestring(key_string)
+	int_len = 4
+	str_len = struct.unpack('>I', data[:int_len])[0]
+	return data[int_len:int_len+str_len] == type
+
 def system_by_code(cmd):
 	execution_code = osystem(cmd)
 	if execution_code is not 0:
@@ -110,6 +126,17 @@ def system_by_code(cmd):
 def isHost(host_name):
 	if not isValidHostname(host_name):
 		error_message('Domain name not valid!')
+
+def isEmail(email):
+	if not isValidMail(email):
+		error_message('Email address is not a valid!')
+
+def isPublicKey(pub_key):
+	try:
+		if not isValidSshPublicKey(pub_key):
+			error_message('Public keys is not a valid!')
+	except:
+		error_message('Public keys is not a valid!')
 
 def getTemplate(template, ext='conf'):
 	return getFile('templates/%s.%s' % (template, ext))

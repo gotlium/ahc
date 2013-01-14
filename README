@@ -75,6 +75,16 @@ Git deployment:
 --------------------------------------------------------------
 
 --------------------------------------------------------------
+Git jail:
+--------------------------------------------------------------
+ahc -m git_jail -a mail@example.com -p 'TYPE KEY-STRING COMMENT'
+ahc -m git_jail -d mail@example.com
+ahc -m git_jail -l
+ahc -m git_jail -i example.com -e templates -u mail@example.com
+ahc -m git_jail -i example.com -f templates -u mail@example.com
+--------------------------------------------------------------
+
+--------------------------------------------------------------
 Project Protection
 --------------------------------------------------------------
 # ahc -m crypt -a mount
