@@ -50,6 +50,7 @@ class Git_jail(HostPath):
 		dir = dir if dir else self.db_dir
 		if not fileExists(dir):
 			os.makedirs(dir, 0755)
+			os.system('chown git:git -R %s' % dir)
 
 	def __userExists(self, email):
 		isEmail(email)
@@ -70,8 +71,8 @@ class Git_jail(HostPath):
 		self.data[email] = {
 			'key': public_key,
 			'dir': user_dir,
+			'projects': {}
 		}
-		info_message('added successful!')
 
 		line = 'command="%(bin_shell)s %(dir)s",no-port-forwarding,' \
 			   'no-X11-forwarding,no-agent-forwarding,no-pty %(key)s'
@@ -85,6 +86,12 @@ class Git_jail(HostPath):
 	def delete(self, email):
 		isEmail(email)
 		self.__userExists(email)
+
+		for (project, folders) in self.data[email]['projects'].items():
+			for folder in folders:
+				self.base.options.ip = project
+				self.base.options.user = email
+				self.disable(folder)
 
 		if fileExists(self.data[email]['dir']):
 			shutil.rmtree(self.data[email]['dir'])
@@ -104,17 +111,27 @@ class Git_jail(HostPath):
 			info_message('*'*100, 'blue')
 			info_message(email, 'lightgreen')
 			for k,v in data.items():
-				info_message('%s:' % k.upper(), 'bold')
-				info_message(v, 'white')
+				if k != 'projects':
+					info_message('%s:' % k.upper(), 'bold')
+					info_message(v, 'white')
 
-			projects = os.listdir(data['dir'])
+			projects = data['projects'].items()
 			if len(projects):
-				info_message('Projects:', 'bold')
-				for f in projects:
+				info_message('PROJECTS:', 'bold')
+				for project, folders in projects:
+					info_message('\t[%s]' % project, 'bold')
+
 					info_message(
-						'\tgit@%s:%s' % (self.base.main['external_ip'], f),
+						'\t\tRepo: git@%s:%s' % (
+						self.base.main['external_ip'], project
+						),
 						'white'
 					)
+					info_message(
+						'\t\tDirs: %s' % ', '.join([folder for folder in folders]),
+						'white'
+					)
+
 				info_message('*'*100, 'blue')
 
 	def enable(self, folder):
@@ -127,10 +144,20 @@ class Git_jail(HostPath):
 		website_dir = data['website_dir']
 		full_path = '%s/%s' % (website_dir, folder)
 		full_path_git = '%s/.git' % full_path
-		repository = '%s/%s.git' % (self.data[email]['dir'], host_name)
+		repository = '%s/%s/%s.git' % (self.data[email]['dir'], host_name, folder)
 		real_repository = '%s/%s.git' % (self.base.git['repositories'], host_name)
 		user_hook = '%s/hooks/post-receive' % repository
 		repo_hooks = '%s/.git/hooks' % website_dir
+
+		if not fileExists(full_path):
+			error_message('Folder %s not exists!' % full_path)
+
+		if not host_name in self.data[email]['projects']:
+			self.data[email]['projects'][host_name] = []
+
+		if folder in self.data[email]['projects'][host_name]:
+			error_message('Repository already exists for this user!')
+		self.data[email]['projects'][host_name].append(folder)
 
 		self.__makeDir(repository)
 		os.system('cd %s && git init --bare' % repository)
@@ -138,11 +165,25 @@ class Git_jail(HostPath):
 			'%s/.gitignore' % full_path,
 			getTemplate('git-jail-gitignore-default')
 		)
+
 		os.system(
 			'cd %s && git init && git remote add origin %s && git add . && '
 			'git commit -am "Initial commit" && git push origin master' % (
 			full_path, repository)
 		)
+
+		os.system('chown git:git -R %s' % full_path)
+		os.system('chown git:git -R %s' % repository)
+		os.system('chown git:git -R %s' % real_repository)
+		os.system('chown git:git -R %s/.git' % website_dir)
+
+
+		'''
+		os.system(
+			'cd %s; git rm --cached %s; git add ./%s/*' % (
+			website_dir, folder, folder
+		))
+		'''
 
 		templates = {
 			user_hook: 'git-jail-post-receive-user-repo',
@@ -164,7 +205,8 @@ class Git_jail(HostPath):
 		self.__userExists(email)
 		data = self.getHostData(host_name)
 		website_dir = data['website_dir']
-		repository = '%s/%s.git' % (self.data[email]['dir'], host_name)
+		repository = '%s/%s/%s.git' % (self.data[email]['dir'], host_name,
+									   folder)
 		real_repository = '%s/%s.git' % (self.base.git['repositories'], host_name)
 		user_hook = '%s/hooks/post-receive' % repository
 		repo_hooks = '%s/.git/hooks' % website_dir
@@ -172,10 +214,14 @@ class Git_jail(HostPath):
 		os.unlink(user_hook)
 		os.unlink('%s/post-commit' % repo_hooks)
 		os.unlink('%s/post-receive' % repo_hooks)
-		os.unlink('%s/hooks/post-receive' % real_repository)
 		shutil.rmtree(repository)
+		shutil.rmtree('%s/%s/.git' % (website_dir, folder))
+		self.data[email]['projects'][host_name].remove(folder)
 
-		# todo: перезаписать в основном репозитории post-receive на оригинал, для деплоя
+		putFile(
+			'%s/hooks/post-receive' % real_repository,
+			getTemplate('git-post-receive') % data
+		)
 
 		info_message('Successful!')
 

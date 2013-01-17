@@ -261,4 +261,4 @@ Apache/Nginx flags:
     -l = list available websites
     -w = wsgi config for python OR django (nginx/uwsgi)
     -b = basic auth. params=user:password
-    -v = VirtualEnv (available for python OR django)
+    -v = VirtualEnv (available for python & django)
