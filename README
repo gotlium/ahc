@@ -246,8 +246,15 @@ FTP flags:
         Default "username" & "password" is equal to hostname
 
 
-Install flags:
-    -s = service name
+Git jail flags:
+    -a - add user
+    -p - ssh public key
+    -d - delete user
+    -l - user list
+    -i - project name (domain name)
+    -e - add access for directory in project
+    -u - email address
+    -f - remove access for directory
 
 
 Apache/Nginx flags:

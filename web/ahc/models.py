@@ -1,6 +1,7 @@
 #from preferences.models import Preferences
 from ConfigParser import RawConfigParser
 from django.db import models
+from validators import *
 
 from fields import DirectoryPathField
 
@@ -113,6 +114,35 @@ class SSL(DatesModel):
 		ordering = ['-id']
 		verbose_name = 'Client-side SSL'
 		verbose_name_plural = 'Client-side SSL'
+
+
+class GitUser(DatesModel):
+	email = models.EmailField('Email', unique=True)
+	ssh_key = models.TextField('SSH Public Key', validators=[validate_ssh_key])
+
+	class Meta:
+		ordering = ['-id']
+		verbose_name = 'Git Jail User'
+		verbose_name_plural = 'Git Jail Users'
+
+	def __unicode__(self):
+		return self.email
+
+
+class JAIL(DatesModel):
+	host = models.ForeignKey(Host, editable=False)
+	user = models.ForeignKey(GitUser, verbose_name='Git Jail user')
+	folder = DirectoryPathField('Folder', max_length=250, short=True,
+		path='/srv/projects/', default="")#, validators=[validate_folder]
+
+	def __unicode__(self):
+		return '%s - %s - %s' % (self.host, self.user, self.folder)
+
+	class Meta:
+		ordering = ['-id']
+		verbose_name = 'Git-Jail User'
+		verbose_name_plural = 'Git Jail'
+
 
 '''
 class AhcPreferences(Preferences):

@@ -87,9 +87,24 @@ def ssl_after_add(sender, instance, created, **kwargs):
 		except:
 			instance.delete()
 
+def git_user_after_add(sender, instance, created, **kwargs):
+	if created:
+		cmd = "ahc -m git_jail -a %s -p '%s'" % (
+			instance.email, instance.ssh_key
+		)
+		os.system(cmd)
+
+def git_jail_after_add(sender, instance, created, **kwargs):
+	if created:
+		cmd = "ahc -m git_jail -i %s -e %s -u %s" % (
+			instance.host.name, instance.folder, instance.user.email
+		)
+		os.system(cmd)
+
+
 def mysql_after_delete(sender, instance, **kwargs):
 	cmd = 'ahc -m mysql -d %s -u %s -p %s -y' % (
-	instance.db_name, instance.db_user, instance.db_pass
+		instance.db_name, instance.db_user, instance.db_pass
 	)
 	os.system(cmd)
 
@@ -100,6 +115,15 @@ def ssl_after_delete(sender, instance, **kwargs):
 	server = instance.host.server.replace('apache', 'apache2')
 	os.system(cmd)
 	os.system('/etc/init.d/%s restart' % server)
+
+def git_user_after_delete(sender, instance, **kwargs):
+	os.system("ahc -m git_jail -d %s" % instance.email)
+
+def git_jail_after_delete(sender, instance, **kwargs):
+	cmd = "ahc -m git_jail -i %s -f %s -u %s" % (
+		instance.host.name, instance.folder, instance.user.email
+	)
+	os.system(cmd)
 
 
 def git_after_save(instance, current):
@@ -143,6 +167,13 @@ signals.post_save.connect(
 signals.post_save.connect(
 	ssl_after_add, SSL, dispatch_uid="ahc.__init__"
 )
+signals.post_save.connect(
+	git_user_after_add, GitUser, dispatch_uid="ahc.__init__"
+)
+signals.post_save.connect(
+	git_jail_after_add, JAIL, dispatch_uid="ahc.__init__"
+)
+
 
 signals.post_delete.connect(
 	host_after_delete, Host, dispatch_uid="ahc.__init__"
@@ -159,6 +190,13 @@ signals.post_delete.connect(
 signals.post_delete.connect(
 	ssl_after_delete, SSL, dispatch_uid="ahc.__init__"
 )
+signals.post_delete.connect(
+	git_user_after_delete, GitUser, dispatch_uid="ahc.__init__"
+)
+signals.post_delete.connect(
+	git_jail_after_delete, JAIL, dispatch_uid="ahc.__init__"
+)
+
 
 signals.pre_save.connect(
 	after_save_bool, Host, dispatch_uid="ahc.__init__"

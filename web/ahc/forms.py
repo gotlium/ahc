@@ -24,6 +24,9 @@ class DNSAdminForm(AbstractAdminForm):
 class SSLAdminForm(AbstractAdminForm):
 	check_field = 'email'
 
+class JAILAdminForm(AbstractAdminForm):
+	check_field = 'folder'
+
 '''
 class PreferencesAdminForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):

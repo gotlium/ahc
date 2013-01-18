@@ -33,6 +33,12 @@ class SSLInline(admin.TabularInline):
 	form = SSLAdminForm
 
 
+class JAILInline(admin.TabularInline):
+	extra = 1
+	model = JAIL
+	form = JAILAdminForm
+
+
 class HostAdmin(admin.ModelAdmin):
 	fieldsets = [
 		('Basic', {'fields': ['name']}),
@@ -53,7 +59,7 @@ class HostAdmin(admin.ModelAdmin):
 	ordering = ('id',)
 	list_per_page = 10
 
-	inlines = [MySQLInline, FTPInline, DNSInline, SSLInline]
+	inlines = [MySQLInline, FTPInline, DNSInline, SSLInline, JAILInline]
 
 	def get_readonly_fields(self, request, obj=None):
 		if obj is not None:
@@ -74,4 +80,5 @@ class PreferencesAdmin(PreferencesAdmin):
 '''
 
 admin.site.register(Host, HostAdmin)
+admin.site.register(GitUser)
 #admin.site.register(AhcPreferences, PreferencesAdmin)

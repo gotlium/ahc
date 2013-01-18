@@ -30,6 +30,12 @@ class Git_jail(HostPath):
 			os.system('useradd -m -U -r -s /bin/bash -d /home/git git')
 			os.system('chown git:git /home/git/ -R')
 			os.system("su -l git -c 'ssh-keygen -t rsa'")
+			email = system('git config --global user.email')
+			name = system('git config --global user.email')
+			if not email:
+				os.system('git config --global user.email "root@localhost"')
+			if not name:
+				os.system('git config --global user.name "root"')
 
 	def __checkBin(self):
 		if not fileExists(self.base.git['bin_shell']):

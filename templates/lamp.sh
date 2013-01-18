@@ -9,8 +9,8 @@ apt-get update && apt-get upgrade -y && apt-get autoremove -y
 if [ ! -f "/root/.ssh/id_rsa.pub" ]; then
     # Ssh key generator
     echo
-    ssh-keygen -t rsa -C $REPOMAIL
-    cat /root/.ssh/id_rsa.pub
+    ssh-keygen -t rsa -f ~/.ssh/id_rsa -P "" -C $REPOMAIL -y
+    echo
     echo 'Are you copied key?' && read && echo 'OK'
     echo
 fi
