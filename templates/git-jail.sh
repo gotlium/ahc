@@ -46,7 +46,7 @@ function ch_dir_and_go_to_branch {
     fi
     cd "$1"
     CURRENT_BRANCH=$(env -i git symbolic-ref --short -q HEAD)
-    git_action stash save
+    # git_action stash save
 
     if [ "$CURRENT_BRANCH" != "$BRANCH" ]; then
         IS_EXISTS=$(env -i git branch|grep "$BRANCH")
@@ -69,4 +69,15 @@ function push_to_origin_repository() {
     if [ ! -z "$REPO_IS_EXISTS" ]; then
         do_git "push"
     fi
+}
+
+function do_send() {
+    ch_dir_and_go_to_branch "$1"
+    do_git "pull"
+    push_to_origin_repository
+
+    ch_dir_and_go_to_branch "$2"
+    git_action add $3
+    commit "'$MESSAGE'"
+    do_git "push"
 }

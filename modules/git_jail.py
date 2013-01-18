@@ -185,6 +185,8 @@ class Git_jail(HostPath):
 		))
 		'''
 
+		key = hash('%(email)s-%(host_name)s-%(folder)s' % locals())
+
 		templates = {
 			user_hook: 'git-jail-post-receive-user-repo',
 			'%s/post-commit' % repo_hooks: 'git-jail-post-commit-repo',
@@ -192,11 +194,37 @@ class Git_jail(HostPath):
 			'%s/hooks/post-receive' % real_repository: 'git-jail-post-receive-real-repo',
 		}
 
+		putFile(
+			'%s/hooks/post-receive.db' % real_repository,
+			'%(website_dir)s;%(full_path)s;.;%(key)s;' % locals(),
+			'a'
+		)
+
+		putFile(
+			'%s.db' % user_hook,
+			'%(full_path)s;%(website_dir)s;./%(folder)s/*;%(key)s;' % locals(),
+			'a'
+		)
+
+		putFile(
+			'%s/post-receive.db' % repo_hooks,
+			'%(full_path)s %(real_repository)s;%(key)s;' % locals(),
+			'a'
+		)
+
 		for f,t in templates.items():
 			putFile(f, getTemplate(t) % locals())
 			os.system('chmod +x %s' % f)
 
 		info_message('Successful!')
+
+	def __remove_from_db(self, filename, key):
+		db = []
+		key = ';%s;' % key
+		for line in getFileArr(filename):
+			if line and key not in line:
+				db.append(line)
+		putFile(filename, '\n'.join(db))
 
 	def disable(self, folder):
 		host_name = self.base.options.ip
@@ -208,15 +236,22 @@ class Git_jail(HostPath):
 		repository = '%s/%s/%s.git' % (self.data[email]['dir'], host_name,
 									   folder)
 		real_repository = '%s/%s.git' % (self.base.git['repositories'], host_name)
-		user_hook = '%s/hooks/post-receive' % repository
 		repo_hooks = '%s/.git/hooks' % website_dir
+		key = hash('%(email)s-%(host_name)s-%(folder)s' % locals())
 
-		os.unlink(user_hook)
-		os.unlink('%s/post-commit' % repo_hooks)
-		os.unlink('%s/post-receive' % repo_hooks)
+		self.__remove_from_db(
+			'%s/hooks/post-receive.db' % real_repository, key
+		)
+		self.__remove_from_db(
+			'%s/post-receive.db' % repo_hooks, key
+		)
+
 		shutil.rmtree(repository)
 		shutil.rmtree('%s/%s/.git' % (website_dir, folder))
 		self.data[email]['projects'][host_name].remove(folder)
+		if not len(self.data[email]['projects'][host_name]):
+			del self.data[email]['projects'][host_name]
+			shutil.rmtree('%s/%s/' % (self.data[email]['dir'], host_name))
 
 		putFile(
 			'%s/hooks/post-receive' % real_repository,
