@@ -22,17 +22,17 @@ clear
 read -p "Are you sure? [y/n] " yn
 case $yn in
 [Yy]* )
-	rm -rf /etc/apache2/sites-*/*
-	rm -rf /etc/nginx/sites-*/*
-	rm -rf /srv/projects/*
-	rm -rf /root/repositories/*
-	rm -rf /etc/rc*.d/*.init
-	rm -rf /etc/init.d/*.init
-	rm -rf /var/run/nginx/*
-	rm -rf /etc/uwsgi/apps-*/*
-	rm -f /usr/sbin/sendmail
-	rm /var/log/uwsgi/app/*
-	rm /etc/vsftpd/vusers/*
+	rm -rf /etc/apache2/sites-*/* >& /dev/null
+	rm -rf /etc/nginx/sites-*/* >& /dev/null
+	rm -rf /srv/projects/* >& /dev/null
+	rm -rf /root/repositories/* >& /dev/null
+	rm -rf /etc/rc*.d/*.init >& /dev/null
+	rm -rf /etc/init.d/*.init >& /dev/null
+	rm -rf /var/run/nginx/* >& /dev/null
+	rm -rf /etc/uwsgi/apps-*/* >& /dev/null
+	rm -f /usr/sbin/sendmail >& /dev/null
+	rm /var/log/uwsgi/app/* >& /dev/null
+	rm /etc/vsftpd/vusers/* >& /dev/null
 	killall -9 uwsgi-core >& /dev/null
 	killall -9 uwsgi >& /dev/null
 
@@ -52,13 +52,13 @@ case $yn in
 	echo "" > /etc/bind/myzones.conf
 	killall -9 python >& /dev/null
 
-	/etc/init.d/apache2 stop
+	/etc/init.d/apache2 stop >& /dev/null
 	sleep 3
-	/etc/init.d/apache2 start
+	/etc/init.d/apache2 start >& /dev/null
 
-	/etc/init.d/nginx stop
+	/etc/init.d/nginx stop >& /dev/null
 	sleep 3
-	/etc/init.d/nginx start
+	/etc/init.d/nginx start >& /dev/null
 	sleep 3
 
 	find ./ \( -name '*.pyc' -or -name '*.pyo' \) -delete

@@ -24,6 +24,8 @@ class ApacheTestCase(CoreHttpTestCase):
 		'sub-1.st_ror.dev', 'sub-a1.ror.dev', 'sub.ror.dev',
 	)
 
+	'''
+
 	def test_a_add_ruby_host(self):
 		self._add_host_test(
 			'ruby', self.ruby_domains, 'Ruby:Hello'
@@ -107,6 +109,7 @@ class ApacheTestCase(CoreHttpTestCase):
 		self._remove_host_test(
 			'ror', self.ror_domains
 		)
+	'''
 
 
 	'''

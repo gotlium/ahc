@@ -8,3 +8,4 @@ db.sqlite
 logfile
 build
 modules/shop.py
+configs-local.cfg

@@ -12,54 +12,49 @@ from time import sleep
 class CoreHttpTestCase(unittest.TestCase, Configs):
 
 	php_domains = (
-		'1st-php.dev', '1st_php.dev', 'st-php.dev', 'st_php.dev', 'php.dev',
+		'1st-php.dev', 'st-php.dev', 'php.dev',
 	)
 	php_sub_domains = (
-		'sub-1.1st-php.dev', 'sub1.1st_php.dev', 'sub_1a.st-php.dev',
-		'sub-1.st_php.dev', 'sub-a1.php.dev', 'sub.php.dev',
+		'sub-1.1st-php.dev', 'sub-a1.php.dev', 'sub.php.dev',
 	)
 
 	python_domains = (
-		'1st-python.dev', '1st_python.dev', 'st-python.dev',
-		'st_python.dev', 'python.dev',
+		'1st-python.dev', 'st-python.dev', 'python.dev',
 	)
 	python_sub_domains = (
-		'sub-1.1st-python.dev', 'sub1.1st_python.dev', 'sub_1a.st-python.dev',
-		'sub-1.st_python.dev', 'sub-a1.python.dev', 'sub.python.dev',
+		'sub-1.1st-python.dev', 'sub-a1.python.dev', 'sub.python.dev',
 	)
 
 	django_domains = (
-		'1st-django.dev', '2st_django.dev', 'a-django.dev', 'b-django.dev',
+		'1st-django.dev', 'a-django.dev', 'b-django.dev',
 		'django.dev', 'st1-django.dev', 'st1-1django.dev',
 	)
 	django_sub_domains = (
-		'sub-1.1st-django.dev', 'sub1.1st_django.dev', 'sub_1a.st-django.dev',
-		'sub-1.st_django.dev', 'sub-a1.django.dev', 'sub.django.dev',
+		'sub-1.1st-django.dev', 'sub-a1.django.dev', 'sub.django.dev',
 	)
 
-
 	django_domains_wsgi = (
-		'django_wsgi.dev', 'a-django_wsgi.dev'
+		'django-wsgi.dev', 'django-1wsgi.dev'
 	)
 
 	django_domains_venv = (
-		'django_venv.dev', 'a-django_venv.dev'
+		'django-venv.dev', '1a-django-venv.dev'
 	)
 
 	django_domains_wsgi_venv = (
-		'django_wv.dev', 'a-django_wv.dev'
+		'django-wv.dev', '1a-django-wv.dev'
 	)
 
 	python_domains_wsgi = (
-		'python_wsgi.dev', 'a-python_wsgi.dev'
+		'python-wsgi.dev', '1a-python-wsgi.dev'
 	)
 
 	python_domains_venv = (
-		'python_venv.dev', 'a-python_venv.dev'
+		'python-venv.dev', '1a-python-venv.dev'
 	)
 
 	python_domains_wsgi_venv = (
-		'python_wv.dev', 'a-python_wv.dev'
+		'python-wv.dev', 'a-python-wv.dev'
 	)
 
 	web_server = 'apache'

@@ -1,12 +1,19 @@
 __author__ = 'gotlium'
 
 from ConfigParser import RawConfigParser
+from helpers import fileExists
 
 class Configs(object):
 
+	def loadConfig(self):
+		if fileExists('configs-local.cfg'):
+			self.config.read('configs-local.cfg')
+		else:
+			self.config.read('configs.cfg')
+
 	def loadConfigs(self):
 		self.config = RawConfigParser()
-		self.config.read('configs.cfg')
+		self.loadConfig()
 		for section in self.config.sections():
 			sectionAttr = {}
 			for item in self.config.items(section):

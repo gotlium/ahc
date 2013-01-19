@@ -165,7 +165,7 @@ from index import *
 
 	def _setup_ror(self, host_name, data, files):
 		if self.web_server == 'nginx':
-			error_message('Type not supported!')
+			error_message('Type is not supported!')
 		self.project_root = data['website_dir']
 		bin = self.base.main['bin_rails']
 		config = {
@@ -301,6 +301,8 @@ from django.core.handlers.modpython import handler
 			os.chown(data['domain_dir'], uid, uid)
 			if fileExists(data['website_dir']):
 				os.chown(data['website_dir'], uid, uid)
+			os.system('find %s -type f|xargs chmod 0644' % self.project_root)
+			os.system('find %s -type f|xargs chmod 0755' % self.project_root)
 		except Exception:
 			error_message("Can't change permissions to directory!")
 

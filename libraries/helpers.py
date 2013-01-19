@@ -12,7 +12,7 @@ import xmpp
 import sys
 import re
 
-from fs import getFileArr, getFile, fileExists, putFile, delFile
+from libraries.fs import getFileArr, getFile, fileExists, putFile
 
 COLORS = {
 	'black': "\033[0;30m",
