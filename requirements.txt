@@ -4,3 +4,4 @@ grab
 paramiko
 xmpppy
 virtualenv
+pycurl

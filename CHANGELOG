@@ -5,6 +5,7 @@ Apache Host Control v.1.5(ENG)
         Nginx / Client-side SSL support
         Web / Client-side SSL
         OpenVPN support
+        Git-Jail
 
     Fixes:
         Php / FastCGI path to unix socket
@@ -94,6 +95,7 @@ Apache Host Control v.1.5(RUS)
         Nginx / поддержка клиентских SSL сертификатов
         Web / поддержка клиентских SSL сертификатов
         Поддержка OpenVPN
+        Git-Jail
 
     Исправления:
         Php / FastCGI путь к unix socket

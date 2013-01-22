@@ -6,6 +6,7 @@ from sys import platform, maxsize, exit
 from smtplib import SMTP
 from ctypes import CDLL
 from math import log
+import hashlib
 import base64
 import struct
 import xmpp
@@ -224,3 +225,9 @@ def sendmail(subject, message):
 def xmppAndMail(subject, message):
 	sendmail(subject, message)
 	xmppMessage(message)
+
+def md5(email):
+	m = hashlib.md5()
+	m.update(email)
+	return m.hexdigest()
+

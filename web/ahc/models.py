@@ -132,8 +132,7 @@ class GitUser(DatesModel):
 class JAIL(DatesModel):
 	host = models.ForeignKey(Host, editable=False)
 	user = models.ForeignKey(GitUser, verbose_name='Git Jail user')
-	folder = DirectoryPathField('Folder', max_length=250, short=True,
-		path='/srv/projects/', default="")#, validators=[validate_folder]
+	folder = models.CharField('Folder', max_length=250)
 
 	def __unicode__(self):
 		return '%s - %s - %s' % (self.host, self.user, self.folder)

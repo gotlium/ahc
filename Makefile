@@ -17,6 +17,7 @@ install:
 	@/bin/cp -Rf ./* $(DESTDIR)/usr/lib/ahc/
 	@/bin/cp -f ./bin.sh $(BINDIR)ahc
 	@/bin/chmod +x $(BINDIR)ahc
+	@/bin/chmod +x /usr/lib/ahc/templates/git-jail.sh
 	@/bin/ln -sf $(DESTDIR)/usr/lib/ahc/configs.cfg $(DESTDIR)/etc/ahc.conf
 	@echo "Done."
 remove:

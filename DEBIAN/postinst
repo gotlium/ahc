@@ -8,5 +8,6 @@ configure)
 	/bin/ln -sf /bin/bash /bin/sh
 	/bin/ln -sf /usr/lib/ahc/configs.cfg /etc/ahc.conf
 	cd /usr/lib/ahc && /usr/bin/pip install -r requirements.txt
+	/bin/chmod +x /usr/lib/ahc/templates/git-jail.sh
 	;;
 esac

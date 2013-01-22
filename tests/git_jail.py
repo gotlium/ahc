@@ -6,13 +6,14 @@ import os
 import shutil
 
 from libraries.configs import Configs
+from libraries.helpers import md5
 
 
 # todo: access to one folder with different users
 # todo: working with branches
 class Git_jailTestCase(TestCase, Configs):
 
-	domain = 'example.com'
+	domain = 'jail.com'
 	user = 'git-jail@example.com'
 
 	def __loadPaths(self):
@@ -89,7 +90,12 @@ class Git_jailTestCase(TestCase, Configs):
 	def test_g_commitToSubRepo(self):
 		self.assertEqual(os.system("su git-jail -c 'cd /tmp/templates/ && echo `date` > date1.html && git add date1.html && env -i GIT_COMMITTER_EMAIL='root@localhost' GIT_AUTHOR_EMAIL='root@localhost' GIT_AUTHOR_NAME='root' GIT_COMMITTER_NAME='root' git commit -am date1 >& /dev/null && git push origin master >& /dev/null'"), 0)
 		self.__checkCommit('date1.html')
-		self.assertEqual(os.system('cd %s && echo `date` > date2.html && git add date2.html && git commit -am date2 >& /dev/null && git push origin master >& /dev/null' % self.templates_dir), 0)
+		self.assertEqual(os.system(
+			'cd %s && echo `date` > date2.html && git add date2.html && '
+			'git commit -am date2 >& /dev/null && '
+			'git push %s master >& /dev/null' % (
+			self.templates_dir, md5(self.user)
+			)), 0)
 		self.__checkCommit('date2.html')
 
 	def test_h_commitToRepo(self):

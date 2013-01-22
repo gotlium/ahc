@@ -2,12 +2,12 @@
 
 read oldrev newrev ref
 
-MESSAGE=$(git log -1 $newrev --pretty=format:%%s)
+MESSAGE=$(git log -1 $newrev --pretty=format:%s)
 USER=$(git log -1 $newrev --pretty=format:%an)
 EMAIL=$(git log -1 $newrev --pretty=format:%ae)
 BRANCH=${ref#refs/heads/}
 GIT=$(which git)
-DEBUG=1
+DEBUG=0
 
 
 function git_action() {
@@ -37,7 +37,7 @@ function commit() {
 }
 
 function do_git {
-    git_action "$1" origin "$BRANCH"
+    git_action "$1" "$2" "$BRANCH"
 }
 
 function ch_dir_and_go_to_branch {
@@ -67,17 +67,17 @@ function ch_dir_and_go_to_branch {
 function push_to_origin_repository() {
     REPO_IS_EXISTS=$(git_action remote -v | cut -f1 | uniq | grep "repo")
     if [ ! -z "$REPO_IS_EXISTS" ]; then
-        do_git "push"
+        git_action push repo "$BRANCH"
     fi
 }
 
 function do_send() {
     ch_dir_and_go_to_branch "$1"
-    do_git "pull"
+    do_git "pull" "$ORIGIN"
     push_to_origin_repository
 
     ch_dir_and_go_to_branch "$2"
     git_action add $3
     commit "'$MESSAGE'"
-    do_git "push"
+    do_git "push" "$REPO"
 }

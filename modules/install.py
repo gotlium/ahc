@@ -3,6 +3,7 @@ __author__ = 'gotlium'
 from socket import gethostname
 import MySQLdb
 import getpass, pwd
+import time
 import os
 
 from libraries.helpers import *
@@ -560,3 +561,24 @@ class Install(object):
 		system_by_code('cp ./templates/ovpn_server.conf /etc/openvpn/')
 		system_by_code('/bin/bash "./templates/ovpn_install.sh"')
 		info_message('OpenVPN successfully installed.')
+
+	def dropbox(self):
+		home = os.getenv('HOME')
+		manage = '%s/dropbox.py' % home
+		run_file = '/etc/init.d/dropbox'
+		init_template = getTemplate('dropbox-runner')
+		os.chdir(home)
+		system_by_code('wget -O dropbox.tar.gz "%s"' % self.base.links['dropbox_url'])
+		system_by_code('tar -zxvf dropbox.tar.gz')
+		putFile(run_file, init_template % {'logname': os.getenv('LOGNAME')})
+		os.system('chmod +x %s' % run_file)
+		os.system('update-rc.d dropbox defaults')
+		os.mkdir('%s/.dropbox/' % home)
+		system_by_code('wget "%s" -O %s' % (self.base.links['dropbox_manage_url'], manage))
+		os.system('chmod +x %s' % manage)
+		info_message('Copy url & open it in your desktop. After authentication and sync, kill this process.')
+		info_message('Replace with linux users you want to run Dropbox clients in %s' % run_file)
+		info_message('Frontend script was stored to ~/dropbox.py')
+		time.sleep(3)
+		os.system('~/.dropbox-dist/dropboxd')
+

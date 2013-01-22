@@ -5,6 +5,7 @@ __author__ = 'gotlium'
 import os
 import json
 import shutil
+import hashlib
 
 from libraries.path import HostPath
 from libraries.helpers import *
@@ -128,7 +129,7 @@ class Git_jail(HostPath):
 					info_message('\t[%s]' % project, 'bold')
 
 					info_message(
-						'\t\tRepo: git@%s:%s' % (
+						'\t\tRepo: git@%s:%s/{DIR}.git' % (
 						self.base.main['external_ip'], project
 						),
 						'white'
@@ -154,6 +155,7 @@ class Git_jail(HostPath):
 		real_repository = '%s/%s.git' % (self.base.git['repositories'], host_name)
 		user_hook = '%s/hooks/post-receive' % repository
 		repo_hooks = '%s/.git/hooks' % website_dir
+		origin = md5(email)
 
 		if not fileExists(full_path):
 			error_message('Folder %s not exists!' % full_path)
@@ -166,16 +168,18 @@ class Git_jail(HostPath):
 		self.data[email]['projects'][host_name].append(folder)
 
 		self.__makeDir(repository)
-		os.system('cd %s && git init --bare' % repository)
+		os.system('cd %s && git init --bare 1> /dev/null' % repository)
 		putFile(
 			'%s/.gitignore' % full_path,
 			getTemplate('git-jail-gitignore-default')
 		)
 
 		os.system(
-			'cd %s && git init && git remote add origin %s && git add . && '
-			'git commit -am "Initial commit" && git push origin master' % (
-			full_path, repository)
+			'cd %(full_path)s && git init 1> /dev/null && '
+			'git remote add %(origin)s %(repository)s && '
+			'git add . && '
+			'git commit -am "Initial commit" 1> /dev/null && '
+			'git push %(origin)s master 1> /dev/null' % locals()
 		)
 
 		os.system('chown git:git -R %s' % full_path)
@@ -202,19 +206,19 @@ class Git_jail(HostPath):
 
 		putFile(
 			'%s/hooks/post-receive.db' % real_repository,
-			'%(website_dir)s;%(full_path)s;.;%(key)s;' % locals(),
+			'%(website_dir)s;%(full_path)s;.;%(key)s;%(origin)s;' % locals(),
 			'a'
 		)
 
 		putFile(
 			'%s.db' % user_hook,
-			'%(full_path)s;%(website_dir)s;./%(folder)s/*;%(key)s;' % locals(),
+			'%(full_path)s;%(website_dir)s;./%(folder)s/*;%(key)s;%(origin)s;' % locals(),
 			'a'
 		)
 
 		putFile(
 			'%s/post-receive.db' % repo_hooks,
-			'%(full_path)s %(real_repository)s;%(key)s;' % locals(),
+			'%(full_path)s;%(real_repository)s;%(key)s;%(origin)s;' % locals(),
 			'a'
 		)
 
