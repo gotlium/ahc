@@ -8,6 +8,7 @@ import os
 
 from libraries.helpers import *
 from libraries.apache import CertificateGenerator
+from libraries.fs import *
 
 class Install(object):
 
@@ -576,6 +577,7 @@ class Install(object):
 		os.mkdir('%s/.dropbox/' % home)
 		system_by_code('wget "%s" -O %s' % (self.base.links['dropbox_manage_url'], manage))
 		os.system('chmod +x %s' % manage)
+		delFile('dropbox.tar.gz')
 		info_message('Copy url & open it in your desktop. After authentication and sync, kill this process.')
 		info_message('Replace with linux users you want to run Dropbox clients in %s' % run_file)
 		info_message('Frontend script was stored to ~/dropbox.py')

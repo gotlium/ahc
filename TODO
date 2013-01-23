@@ -1,10 +1,12 @@
 Before version 2.0 will be released:
-    VSFTPD config for version >= 2.3.5
-    Nginx / Ruby+RoR support
-    Nginx / proxied hosts support
-    Complex add/remove hosts
+    SFTP support
+    FTP / Configs compatibility with versions >= 2.3.5
+    Nginx / Ruby+RoR
+    Nginx / Proxy-pass hosts
 
 Sometime:
     If main domain was removed, sub domain can't be removed.
     List of all created websites/domains/ftp accounts & etc.
-    auto detect - cpu, memory & etc
+    Auto detect - cpu, memory & etc
+    Tests for modules: backups, certs, open vpn, web-interface
+    Complex add/remove hosts
