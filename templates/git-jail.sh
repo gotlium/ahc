@@ -45,7 +45,7 @@ function ch_dir_and_go_to_branch {
         echo "cd $1"
     fi
     cd "$1"
-    CURRENT_BRANCH=$(env -i git symbolic-ref --short -q HEAD)
+    CURRENT_BRANCH=$(env -i git rev-parse --abbrev-ref HEAD)
     # git_action stash save
 
     if [ "$CURRENT_BRANCH" != "$BRANCH" ]; then
