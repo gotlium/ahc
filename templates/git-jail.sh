@@ -57,10 +57,10 @@ function ch_dir_and_go_to_branch {
                 git_action checkout -b "$BRANCH"
             fi
         else
-            git_action checkout "$BRANCH"
+            git_action checkout -f "$BRANCH"
         fi
     else
-        git_action checkout "$BRANCH"
+        git_action checkout -f "$BRANCH"
     fi
 }
 
