@@ -65,19 +65,22 @@ function ch_dir_and_go_to_branch {
 }
 
 function push_to_origin_repository() {
-    REPO_IS_EXISTS=$(git_action remote -v | cut -f1 | uniq | grep "repo")
+    cd "$1"
+    REPO_IS_EXISTS=$(env -i git remote -v | cut -f1 | uniq | grep "repo")
     if [ ! -z "$REPO_IS_EXISTS" ]; then
         git_action push repo "$BRANCH"
+        echo "Sent to remote"
     fi
 }
 
 function do_send() {
     ch_dir_and_go_to_branch "$1"
     do_git "pull" "$ORIGIN"
-    push_to_origin_repository
 
     ch_dir_and_go_to_branch "$2"
     git_action add $3
     commit "'$MESSAGE'"
     do_git "push" "$REPO"
+
+    push_to_origin_repository "$1"
 }
