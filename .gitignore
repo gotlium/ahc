@@ -9,3 +9,7 @@ logfile
 build
 modules/shop.py
 configs-local.cfg
+ahc.egg-info
+dist
+py-lint.sh
+violations-python.txt

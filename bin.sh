@@ -17,7 +17,7 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-AHC_PATH="/usr/lib/ahc"
+AHC_PATH="/usr/lib/ahc/ahc"
 PYTHONPATH="${PYTHONPATH:+$PYTHONPATH:}$AHC_PATH"
 PYTHON="/usr/bin/python"
 

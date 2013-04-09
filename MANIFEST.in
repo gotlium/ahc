@@ -1,0 +1,8 @@
+include README
+include LICENSE
+include AUTHORS
+recursive-include ahc/templates *
+recursive-include ahc/web *
+recursive-include ahc/modules *
+recursive-include ahc/libraries *
+recursive-include ahc/tests *
