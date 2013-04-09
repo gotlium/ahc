@@ -7,7 +7,7 @@ db.sqlite
 *.log
 logfile
 build
-modules/shop.py
+shop.py
 configs-local.cfg
 ahc.egg-info
 dist

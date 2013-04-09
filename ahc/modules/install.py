@@ -415,8 +415,6 @@ class Install(object):
             db = MySQLdb.connection(
                 self.base.mysql['host'], self.base.mysql['user'], ''
             )
-        except Exception, msg:
-            error_message(msg)
 
         db.query("SET PASSWORD FOR root@localhost=PASSWORD('');")
 

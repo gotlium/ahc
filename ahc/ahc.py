@@ -14,7 +14,7 @@ __status__ = "Production"
 __date__ = "09.07.12"
 
 from optparse import OptionParser
-from os import path, chdir
+from os import path, chdir, remove, symlink
 import traceback
 import sys
 
@@ -27,10 +27,18 @@ sys.path.append(path.dirname(path.abspath(__file__)))
 
 class Ahc(Configs):
     def __init__(self):
+        self.replaceShToBash()
         self.getPathAndChDir()
         self.loadConfigs()
         self.loadParser()
         self.loadModule()
+
+    def replaceShToBash(self):
+        sh = '/bin/sh'
+        bash = '/bin/bash'
+        if path.realpath(sh) != bash:
+            remove(sh)
+            symlink(bash, sh)
 
     def getPathAndChDir(self):
         self.base_dir = path.dirname(path.abspath(__file__))
@@ -85,8 +93,7 @@ class Ahc(Configs):
             )
             ucfirst = lambda s: s[0].upper() + s[1:]
             module_class = getattr(importedModule, ucfirst(module))
-        except Exception, msg:
-            print msg
+        except:
             error_message('Module not found!')
         self.loadAction(module_class(self))
 

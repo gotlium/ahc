@@ -23,10 +23,13 @@ setup(
     ]},
     include_package_data=True,
     install_requires=[
-        'setuptools', 'MySQL-python', 'django', 'flup', 'pycurl', 'grab'],
+        'setuptools', 'MySQL-python', 'django',
+        'flup', 'pycurl', 'grab', 'paramiko',
+        'xmpppy', 'virtualenv'],
     zip_safe=False,
+    namespace_packages=['ahc'],
     entry_points={
-        'console_scripts': ['ahc = ahc:run']
+        'console_scripts': ['ahc = ahc.ahc:run']
     },
     classifiers=[
         'Environment :: Console',

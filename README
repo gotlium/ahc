@@ -15,12 +15,19 @@ Published under GNU GPL v.2.
 --------------------------------------------------------------
 Apache Host Control:
 --------------------------------------------------------------
-$ sudo -i
-# apt-get update && apt-get upgrade -y
-# apt-get install -y python-pip python-mysqldb python-flup git-core make python-pycurl
-# cd /usr/src/ && git clone https://github.com/gotlium/ahc.git
-# cd ahc/ && pip install -r requirements.txt && make install
-# cd && ahc -m install -s lamp && ahc -m install -s firewall
+    $ sudo -i
+    # apt-get update && apt-get upgrade -y
+    # apt-get install -y python-pip python-mysqldb python-flup git-core make python-pycurl
+    # cd /usr/src/ && git clone https://github.com/gotlium/ahc.git
+    # cd ahc/ && pip install -r requirements.txt && make install
+
+OR using pip:
+
+    # sudo pip install ahc
+
+After installation, you can install LAMP packages and firewall rules:
+    # ahc -m install -s lamp
+    # ahc -m install -s firewall
 --------------------------------------------------------------
 
 ##############################################################
