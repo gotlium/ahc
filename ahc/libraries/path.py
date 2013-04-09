@@ -1,6 +1,6 @@
 __author__ = 'gotlium'
 
-from helpers import *
+from helpers import error_message
 
 
 class HostPath(object):

@@ -1,16 +1,18 @@
 __author__ = 'gotlium'
 
 from socket import gethostname
+import MySQLdb
 import getpass
 import pwd
 import time
 import os
+import re
 
-import MySQLdb
-
-from libraries.helpers import *
+from libraries.helpers import (
+    info_message, error_message, getTemplate, backFile, hosts,
+    system_by_code, service_restart, isValidHostname, isValidIp)
 from libraries.apache import CertificateGenerator
-from libraries.fs import *
+from libraries.fs import fileExists, putFile, delFile, getFile
 
 
 class Install(object):
@@ -132,10 +134,12 @@ class Install(object):
         if fileExists(ssl_file_pem) or fileExists(ssl_file_key):
             error_message('SSL certificate already installed!')
         ssl_conf = self.base.nginx['ssl_conf']
-        system_by_code('cd %s && %s req -new -x509 -days 9999 -nodes -subj \
-/C=RU/O=Localhosy/CN=localhost/emailAddress=root@localhost -out %s -keyout %s' % \
-                       (ssl_dir, self.base.main['bin_openssl'], ssl_file_pem,
-                        ssl_file_key)
+        system_by_code(
+            'cd %s && %s req -new -x509 -days 9999 -nodes -subj '
+            '/C=RU/O=Localhosy/CN=localhost/emailAddress='
+            'root@localhost -out %s -keyout %s' % (
+                ssl_dir, self.base.main['bin_openssl'], ssl_file_pem,
+                ssl_file_key)
         )
         config = {
             'ssl_file_pem': ssl_file_pem,
@@ -167,25 +171,25 @@ class Install(object):
 
         db.query('CREATE DATABASE %s;' % db_name)
         db.query(
-            "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP ON \
-                    %s.* TO '%s'@'localhost' IDENTIFIED BY '%s';" % \
-            (db_name, db_user, db_password)
+            "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP ON "
+            "%s.* TO '%s'@'localhost' IDENTIFIED BY '%s';" % (
+                db_name, db_user, db_password)
         )
         db.query(
-            "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP ON \
-                    %s.* TO '%s'@'127.0.0.1' IDENTIFIED BY '%s';" % \
-            (db_name, db_user, db_password)
+            "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP ON "
+            "%s.* TO '%s'@'127.0.0.1' IDENTIFIED BY '%s';" % (
+                db_name, db_user, db_password)
         )
         db.query('FLUSH PRIVILEGES;')
         db.query('USE %s;' % db_name)
         db.query("""
-			  CREATE TABLE `accounts` (
-				`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-				`username` VARCHAR( 30 ) NOT NULL ,
-				`pass` VARCHAR( 50 ) NOT NULL ,
-				UNIQUE (`username`)
-			  ) ENGINE = MYISAM ;
-		""")
+        CREATE TABLE `accounts` (
+            `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+            `username` VARCHAR( 30 ) NOT NULL ,
+            `pass` VARCHAR( 50 ) NOT NULL ,
+            UNIQUE (`username`)
+        ) ENGINE = MYISAM ;
+        """)
         db.close()
 
         if fileExists(config):
@@ -286,7 +290,7 @@ class Install(object):
         ip = None
 
         if fileExists(self.base.apache2['sites_available'] +
-                '/confluence.conf'):
+                      '/confluence.conf'):
             error_message('Confluence was installed!')
 
         for i in range(3):
@@ -396,8 +400,8 @@ class Install(object):
         service_restart(
             self.base.apache2['init'], 'reload'
         )
-        system_by_code('ahc -m bind -a jira.%(domain)s -i %(ip)s >& '
-                       '/dev/null' % conf)
+        system_by_code(
+            'ahc -m bind -a jira.%(domain)s -i %(ip)s >& /dev/null' % conf)
 
         info_message("Use this credentials, on Jira installation interface:")
         system_by_code('ahc -m mysql -a jira -u jira -p random')
@@ -431,7 +435,8 @@ class Install(object):
             system_by_code(
                 'rm -rf /etc/dovecot/*.[0-9]*[0-9]*[0-9]*[0-9]*[0-9]*[0-9]')
             system_by_code(
-                'rm -rf /etc/spamassassin/*.[0-9]*[0-9]*[0-9]*[0-9]*[0-9]*[0-9]')
+                'rm -rf /etc/spamassassin/*.[0-9]*[0-9]*[0-9]*[0-9]*'
+                '[0-9]*[0-9]')
             system_by_code(
                 'rm -rf %s/*/*.[0-9]*[0-9]*[0-9]*[0-9]*[0-9]*[0-9]' %
                 self.base.apache2['etc']
@@ -488,7 +493,8 @@ class Install(object):
         postfix = getFile(postfixConf)
         for comment in comments:
             postfix = postfix.replace(comment, '# %s' % comment)
-        postfix += "\nsmtpd_recipient_restrictions = permit_mynetworks, reject_unauth_destination\n"
+        postfix += "\nsmtpd_recipient_restrictions = " \
+                   "permit_mynetworks, reject_unauth_destination\n"
         postfix += "\nmailbox_size_limit = 10240000\n"
         if not putFile(postfixConf, postfix):
             error_message("Can't write postfix config!")
@@ -602,10 +608,11 @@ class Install(object):
         os.system('chmod +x %s' % manage)
         delFile('dropbox.tar.gz')
         info_message(
-            'Copy url & open it in your desktop. After authentication and sync, kill this process.')
+            'Copy url & open it in your desktop. After authentication and '
+            'sync, kill this process.')
         info_message(
-            'Replace with linux users you want to run Dropbox clients in %s' % run_file)
+            'Replace with linux users you want to run Dropbox clients '
+            'in %s' % run_file)
         info_message('Frontend script was stored to ~/dropbox.py')
         time.sleep(3)
         os.system('~/.dropbox-dist/dropboxd')
-

@@ -21,7 +21,6 @@ class CoreHttp(HostPath):
         self.config = base.__getattribute__(self.web_server)
         checkInstall(self.config)
 
-
     def __getattr__(self, method):
         def find_method(*args, **kwargs):
             getattr(self, '_%s' % method)(*args, **kwargs)
@@ -38,8 +37,8 @@ class CoreHttp(HostPath):
                 'cd %s && source venv/bin/activate && pip install django && '
                 'deactivate' % root
             )
-        if self.base.options.venv and not self.base.options.wsgi and \
-                        self.base.options.module == 'nginx':
+        if self.base.options.venv and not self.base.options.wsgi and (
+                self.base.options.module == 'nginx'):
             system_by_code(
                 'cd %s && source venv/bin/activate && pip install flup && '
                 'deactivate' % root
@@ -66,8 +65,8 @@ class CoreHttp(HostPath):
         return ""
 
     def __getTemplate(self, template, ext='conf'):
-        if self.base.options.venv and not self.base.options.wsgi and \
-                        self.base.options.module == 'apache':
+        if self.base.options.venv and not self.base.options.wsgi and (
+                self.base.options.module == 'apache'):
             filename = 'templates/%s-%s-mod_python-venv.%s' % \
                        (self.web_server, template, ext)
             if not fileExists(filename):
@@ -79,8 +78,7 @@ class CoreHttp(HostPath):
             if not fileExists(filename):
                 error_message('WSGI not supported for current type!')
             return getFile(filename)
-        return getFile('templates/%s-%s.%s' % \
-                       (self.web_server, template, ext))
+        return getFile('templates/%s-%s.%s' % (self.web_server, template, ext))
 
     def __optimizationTemplate(self):
         if self.base.options.optimize and self.web_server == 'apache2':
@@ -123,7 +121,7 @@ activate_this = '%s/venv/bin/activate_this.py'
 execfile(activate_this, dict(__file__=activate_this))
 
 from index import *
-					""" % self.project_root)
+        """ % self.project_root)
         config = {
             'port': self.config['port'],
             'hostname': host_name,
@@ -198,7 +196,6 @@ from index import *
         except:
             error_message("Can't change permissions to directory!")
 
-
     def __get_project_name(self, host_name):
         project = host_name.replace('-', '_').replace('.', '_')
         return re.sub('([^a-z0-9_])+', '', project)
@@ -225,7 +222,7 @@ activate_this = '%s/venv/bin/activate_this.py'
 execfile(activate_this, dict(__file__=activate_this))
 
 from django.core.handlers.modpython import handler
-					""" % self.project_root)
+                    """ % self.project_root)
 
         config = {
             'port': self.config['port'],
@@ -316,13 +313,13 @@ from django.core.handlers.modpython import handler
 
         info_message('Site successfully added.')
         info_message(
-            'For check http use this command:\n\tlinks http://%s:%s/' % \
-            (host_name, self.config['port'])
+            'For check http use this command:\n\tlinks http://%s:%s/' % (
+                host_name, self.config['port'])
         )
         if self.base.main['use_ssl']:
             info_message(
-                'For check https use this command:\n\tlinks https://%s:%s/' % \
-                (host_name, self.config['ssl_port'])
+                'For check https use this command:\n\tlinks https://%s:%s/' % (
+                    host_name, self.config['ssl_port'])
             )
 
     def _delete(self, host_name):

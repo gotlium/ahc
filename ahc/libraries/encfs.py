@@ -1,8 +1,8 @@
 from subprocess import Popen, PIPE
+from shutil import rmtree, move
 import os
-from shutil import *
 
-from helpers import *
+from helpers import fileExists, system, system_by_code
 
 
 ECHO = "/bin/echo"
@@ -36,10 +36,10 @@ class EncFS(object):
                 rmtree(self.path)
                 os.mkdir(self.path)
 
-            p1 = Popen([ECHO, "-e", "\"p\n%s\n\"" % \
-                                    self.password], stdout=PIPE)
-            p2 = Popen([self.bin, "-S", self.crypt, \
-                        self.path, "--public"], stdin=p1.stdout, stdout=PIPE)
+            p1 = Popen([ECHO, "-e", "\"p\n%s\n\"" % self.password],
+                       stdout=PIPE)
+            p2 = Popen([self.bin, "-S", self.crypt, self.path, "--public"],
+                       stdin=p1.stdout, stdout=PIPE)
             p2.communicate()
             if p2.poll() is not 0:
                 raise Exception('Bad Password!')

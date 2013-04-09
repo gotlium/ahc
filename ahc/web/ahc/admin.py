@@ -6,8 +6,10 @@ __date__ = "26.10.12"
 #from preferences.admin import PreferencesAdmin
 from django.contrib import admin
 
-from ahc.web.ahc.models import *
-from ahc.web.ahc.forms import *
+from ahc.models import (Host, DNS, FTP, MySQL, SSL, JAIL, GitUser)
+from ahc.forms import (
+    MySQLAdminForm, FTPAdminForm, DNSAdminForm, SSLAdminForm, JAILAdminForm
+)
 
 
 class MySQLInline(admin.TabularInline):
@@ -74,11 +76,11 @@ class HostAdmin(admin.ModelAdmin):
 
 '''
 class PreferencesAdmin(PreferencesAdmin):
-	exclude = ('sites',)
-	form = PreferencesAdminForm
+    exclude = ('sites',)
+    form = PreferencesAdminForm
 
-	def add_view(self, *args, **kwargs):
-		return self.changelist_view(*args, **kwargs)
+    def add_view(self, *args, **kwargs):
+        return self.changelist_view(*args, **kwargs)
 '''
 
 admin.site.register(Host, HostAdmin)

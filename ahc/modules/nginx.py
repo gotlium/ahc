@@ -13,14 +13,14 @@ class Nginx(CoreHttp):
                   './manage.py runfcgi method=prefork socket=%(socket_path)s '
                   'pidfile=%(pid_path)s >& /dev/null &',
         'django-venv': 'cd %(project_root)s && source venv/bin/activate && '
-                       'chmod +x ./manage.py && nohup '
-                       './manage.py runfcgi method=prefork socket=%(socket_path)s '
+                       'chmod +x ./manage.py && nohup ./manage.py runfcgi '
+                       'method=prefork socket=%(socket_path)s '
                        'pidfile=%(pid_path)s >& /dev/null &',
         'python': 'cd %(project_root)s && chmod +x ./index.py\nnohup '
                   './index.py >& /dev/null &\nPID=$!',
         'python-venv': 'cd %(project_root)s && source venv/bin/activate && '
-                       'chmod +x ./index.py\nnohup ./index.py >& /dev/null&\nPID=$!'
-
+                       'chmod +x ./index.py\nnohup ./index.py '
+                       '>& /dev/null&\nPID=$!'
     }
 
     uwsgi_module = {
@@ -52,8 +52,8 @@ class Nginx(CoreHttp):
 
     def __addWebsiteRunnerAndRun(self):
         if self.type == 'php':
-            system_by_code('%s restart 1> /dev/null' % \
-                           self.base.main['bin_php5_fpm'])
+            system_by_code('%s restart 1> /dev/null' % (
+                self.base.main['bin_php5_fpm'],))
             return
 
         config = {
@@ -118,14 +118,14 @@ class Nginx(CoreHttp):
     def __setActiveFastCGI(self, flag):
         if flag:
             action = 'start'
-            system_by_code('%s %s.init defaults 1> /dev/null' % \
-                           (self.base.main['bin_update_rc_d'],
-                            self.project_name))
+            system_by_code('%s %s.init defaults 1> /dev/null' % (
+                self.base.main['bin_update_rc_d'],
+                self.project_name))
         else:
             action = 'stop'
-            system_by_code('%s -f %s.init remove 1> /dev/null' % \
-                           (self.base.main['bin_update_rc_d'],
-                            self.project_name))
+            system_by_code('%s -f %s.init remove 1> /dev/null' % (
+                self.base.main['bin_update_rc_d'],
+                self.project_name))
         init_file = '/etc/init.d/%s.init' % self.project_name
         system_by_code('%(init)s %(action)s' % {
             'init': init_file, 'action': action

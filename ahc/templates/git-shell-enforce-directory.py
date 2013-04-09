@@ -54,7 +54,8 @@ def getParser():
 
 
 ALLOW_RE = re.compile(
-    "^(?P<command>git-(?:receive|upload)-pack) '[a-zA-Z][a-zA-Z0-9@._-]*(/[a-zA-Z][a-zA-Z0-9@._-]*)*'$")
+    "^(?P<command>git-(?:receive|upload)-pack) '[a-zA-Z][a-zA-Z0-9@._-]*"
+    "(/[a-zA-Z][a-zA-Z0-9@._-]*)*'$")
 COMMANDS_READONLY = ['git-upload-pack']
 COMMANDS_WRITE = ['git-receive-pack']
 

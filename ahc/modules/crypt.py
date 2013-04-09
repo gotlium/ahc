@@ -1,11 +1,12 @@
 __author__ = 'gotlium'
 
-from getpass import getpass
 from os.path import basename, dirname
 from os import chown, chmod
+from getpass import getpass
 
+from libraries.helpers import error_message, info_message
+from libraries.fs import fileExists
 from libraries.encfs import EncFS
-from libraries.helpers import *
 
 
 class Crypt(object):

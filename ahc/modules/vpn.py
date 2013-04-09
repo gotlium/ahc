@@ -42,13 +42,12 @@ verb 4
 pull
 comp-lzo
 cipher DES-EDE3-CBC
-		""" % self.base.main, 'white')
+        """ % self.base.main, 'white')
         info_message('*' * 100, 'blue')
-
 
     def delete(self, client):
         system_by_code(
-            'cd /etc/openvpn/easy-rsa && source ./vars && ./revoke-full %s >& /dev/null' %
-            client
+            'cd /etc/openvpn/easy-rsa && source ./vars && '
+            './revoke-full %s >& /dev/null' % client
         )
         info_message('Successful!')

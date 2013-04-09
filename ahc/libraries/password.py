@@ -23,7 +23,7 @@ def select(character):
 
 
 def random_password(max_value=15):
-    total = string.ascii_letters + string.digits # + string.punctuation
+    total = string.ascii_letters + string.digits
     password = ''.join(random.sample(total, max_value))
     while not approved(password):
         password = ''.join(random.sample(total, max_value))

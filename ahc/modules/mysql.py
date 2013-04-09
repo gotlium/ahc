@@ -26,7 +26,7 @@ class Mysql(object):
         checkInstall(self.config)
 
     def __getDbName(self, host_name):
-        host_name = host_name.split('.')#[:-1]
+        host_name = host_name.split('.')
         return '_'.join(host_name)
 
     def __getLogin(self, host_name):
@@ -49,18 +49,19 @@ class Mysql(object):
         database = self.__getDbName(host_name)
         try:
             self.cursor.execute(
-                "CREATE DATABASE `%s` CHARACTER SET utf8 COLLATE utf8_general_ci;" % database)
+                "CREATE DATABASE `%s` CHARACTER SET utf8 "
+                "COLLATE utf8_general_ci;" % database)
             self.cursor.execute(
-                "GRANT ALL ON %s.* TO '%s'@'%%' IDENTIFIED BY '%s';" % \
-                (database, login, password)
+                "GRANT ALL ON %s.* TO '%s'@'%%' IDENTIFIED BY '%s';" % (
+                    database, login, password)
             )
             self.cursor.execute(
-                "GRANT ALL ON %s.* TO '%s'@'127.0.0.1' IDENTIFIED BY '%s';" % \
-                (database, login, password)
+                "GRANT ALL ON %s.* TO '%s'@'127.0.0.1' IDENTIFIED BY '%s';" % (
+                    database, login, password)
             )
             self.cursor.execute(
-                "GRANT ALL ON %s.* TO '%s'@'localhost' IDENTIFIED BY '%s';" % \
-                (database, login, password)
+                "GRANT ALL ON %s.* TO '%s'@'localhost' IDENTIFIED BY '%s';" % (
+                    database, login, password)
             )
             self.cursor.execute('FLUSH PRIVILEGES;')
         except Exception, msg:
@@ -77,16 +78,13 @@ class Mysql(object):
 
         try:
             self.cursor.execute(
-                "REVOKE ALL ON %s.* FROM '%s'@'%%';" % \
-                (database, login)
+                "REVOKE ALL ON %s.* FROM '%s'@'%%';" % (database, login)
             )
             self.cursor.execute(
-                "REVOKE ALL ON %s.* FROM '%s'@'127.0.0.1';" % \
-                (database, login)
+                "REVOKE ALL ON %s.* FROM '%s'@'127.0.0.1';" % (database, login)
             )
             self.cursor.execute(
-                "REVOKE ALL ON %s.* FROM '%s'@'localhost';" % \
-                (database, login)
+                "REVOKE ALL ON %s.* FROM '%s'@'localhost';" % (database, login)
             )
             self.cursor.execute('FLUSH PRIVILEGES;')
 

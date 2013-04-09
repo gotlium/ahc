@@ -107,13 +107,14 @@ emailAddress	= supplied
        self.default_crl_days, self.default_md, self.policy, self.policy)
         putFile(self.config_file, config)
         system_by_code(
-            '%s req -new -newkey rsa:1024 -nodes -keyout %s -x509 -days %s -subj \
-/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s/emailAddress=%s -out %s >& /dev/null' %
-            (self.openssl, self.private_key, self.private_key_days,
-             self.country, self.state, self.locality_name,
-             self.organization_name, self.organizational_unit_name,
-             self.common_name, self.email_address,
-             self.certificate)
+            '%s req -new -newkey rsa:1024 -nodes -keyout %s -x509 '
+            '-days %s -subj /C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s/emailAddress=%s '
+            '-out %s >& /dev/null' % (
+                self.openssl, self.private_key, self.private_key_days,
+                self.country, self.state, self.locality_name,
+                self.organization_name, self.organizational_unit_name,
+                self.common_name, self.email_address,
+                self.certificate)
         )
 
         self.__crlGen()
@@ -135,17 +136,18 @@ emailAddress	= supplied
         password = self.__getRand()
 
         system_by_code(
-            '%s req -new -newkey rsa:1024 -nodes -keyout %s -subj \
-/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s/emailAddress=%s -out %s >& /dev/null' % \
-            (
+            '%s req -new -newkey rsa:1024 -nodes -keyout %s -subj '
+            '/C=%s/ST=%s/L=%s/O=%s/OU=%s/CN=%s/emailAddress=%s -out %s '
+            '>& /dev/null' % (
                 self.openssl, keyout, self.country, self.state,
                 self.locality_name,
                 self.organization_name,
                 self.organizational_unit_name, self.common_name, email, csr)
         )
 
-        system_by_code('%s ca -config %s -in %s -out %s -batch >& /dev/null' %
-                       (self.openssl, self.config_file, csr, crt))
+        system_by_code(
+            '%s ca -config %s -in %s -out %s -batch >& /dev/null' % (
+                self.openssl, self.config_file, csr, crt))
 
         if self.__getSerial() == num:
             raise Exception('Certificate file not created!')
@@ -156,8 +158,9 @@ emailAddress	= supplied
             raise Exception('Error, when trying to verify certificate file!')
 
         system_by_code(
-            '%s pkcs12 -export -in %s -inkey %s -certfile %s -out %s -passout pass:%s >& /dev/null' %
-            (self.openssl, crt, keyout, self.certificate, p12, password))
+            '%s pkcs12 -export -in %s -inkey %s -certfile %s -out %s '
+            '-passout pass:%s >& /dev/null' % (
+                self.openssl, crt, keyout, self.certificate, p12, password))
 
         return {
             'password': password,
@@ -177,9 +180,9 @@ emailAddress	= supplied
         chdir(self.cert_directory)
 
         system_by_code(
-            '%s ca -config %s -revoke %s >& /dev/null' % \
-            (self.openssl, self.config_file,
-             self.client_cert_crt % clients[email])
+            '%s ca -config %s -revoke %s >& /dev/null' % (
+                self.openssl, self.config_file,
+                self.client_cert_crt % clients[email])
         )
         self.__crlGen()
         return True
@@ -188,8 +191,8 @@ emailAddress	= supplied
         db = getFileArr("%s/%s" % (self.cert_directory, self.database))
         data = {}
         for i, line in enumerate(db):
-            status, expiration, revocation, serial, filename, certificate = line.split(
-                "\t")
+            (status, expiration, revocation,
+             serial, filename, certificate) = line.split("\t")
             email = line.split("=")[-1:][0]
             if full:
                 data[i] = {

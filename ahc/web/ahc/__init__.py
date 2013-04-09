@@ -1,11 +1,12 @@
 from subprocess import Popen, STDOUT, PIPE
+from ConfigParser import RawConfigParser
 import shutil
 import os
 
 from django.db.models import signals
 from django.conf import settings
 
-from ahc.web.ahc.models import *
+from ahc.models import (Host, DNS, FTP, MySQL, SSL, JAIL, GitUser)
 
 
 def host_after_add(sender, instance, created, **kwargs):
@@ -83,8 +84,8 @@ def ssl_after_add(sender, instance, created, **kwargs):
             cmd = 'ahc -m certs -a %s -i %s' % (instance.email, domain)
             p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT)
             data = p.communicate()[0].strip().split('\n')
-            certificate = data[2].split(':')[1].strip().split('.p12')[
-                              0] + '.p12'
+            certificate = data[2].split(':')[1].strip().split(
+                '.p12')[0] + '.p12'
             new_path = 'certs/%s' % os.path.basename(certificate)
             instance.password = data[1].split(':')[1].strip()
             instance.p12 = new_path

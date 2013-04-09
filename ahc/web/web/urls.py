@@ -5,11 +5,12 @@ from django.contrib import admin
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
-                       url(r'^$', 'ahc.views.home', name='home'),
-                       url(r'^admin/', include(admin.site.urls)),
-                       url(r'^grappelli/', include('grappelli.urls')),
-                       url(r'^captcha/', include('captcha.urls')),
+urlpatterns = patterns(
+    '',
+    url(r'^$', 'ahc.views.home', name='home'),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^grappelli/', include('grappelli.urls')),
+    url(r'^captcha/', include('captcha.urls')),
 )
 
 from django.conf.urls.static import static

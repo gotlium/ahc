@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 def helloworld(environ, start_response):
     start_response('200 OK', [('Content-Type', 'text/plain')])
     return ['Python:Hello, World!\n']
@@ -13,4 +14,3 @@ def runfcgi(func, socket_path='%(socket_path)s'):
 
 
 runfcgi(helloworld)
-

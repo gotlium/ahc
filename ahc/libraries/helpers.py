@@ -86,7 +86,7 @@ def renameProcess(name, libc=None):
         if libc:
             CDLL(libc).prctl(15, name, 0, 0, 0)
             return True
-    except Exception, msg:
+    except:
         pass
     return False
 
@@ -119,10 +119,11 @@ def isValidHostname(hostname):
 
 def isValidMail(email):
     email_re = re.compile(
-        r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom
-        r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|\\[\001-011\013\014\016-\177])*"' # quoted-string
+        r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"
+        r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|\\[\001-011\013\014'
+        r'\016-\177])*"'
         r')@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?$',
-        re.IGNORECASE)  # domain
+        re.IGNORECASE)
     return True if email_re.match(email) else False
 
 
@@ -164,7 +165,8 @@ def getTemplate(template, ext='conf'):
 
 def isValidIp(ip):
     segments = ip.split('.')
-    if len(segments) != 4: return False
+    if len(segments) != 4:
+        return False
     for segment in segments:
         if not segment.isdigit() or int(segment) > 255 or len(segment) > 3:
             return False
@@ -261,4 +263,3 @@ def md5(email):
     m = hashlib.md5()
     m.update(email)
     return m.hexdigest()
-

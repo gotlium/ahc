@@ -45,18 +45,18 @@ class Certs(CertificateGenerator):
             clients = self.getClients()
             max_mail = max(map(len, [r['email'] for r in clients.values()]))
             print(
-                '%s\t%s\t%s\t%s\t%s\t%s' % \
-                ('Serial', 'Status', self._gf('Email', max_mail),
-                 self._gf('Expiration'), self._gf('Revocation'), 'Certfile')
+                '%s\t%s\t%s\t%s\t%s\t%s' % (
+                    'Serial', 'Status', self._gf('Email', max_mail),
+                    self._gf('Expiration'), self._gf('Revocation'), 'Certfile')
             )
             for i, row in clients.items():
                 email = self._gf(row['email'], max_mail)
                 expiration = self._gf(row['expiration'])
                 revocation = self._gf(row['revocation'])
                 print (
-                    '%s\t%s\t%s\t%s\t%s\t%s' % \
-                    (row['serial'], row['status'], email,
-                     expiration, revocation, row['certfile']
+                    '%s\t%s\t%s\t%s\t%s\t%s' % (
+                        row['serial'], row['status'], email,
+                        expiration, revocation, row['certfile']
                     ))
         except Exception, msg:
             error_message(msg)

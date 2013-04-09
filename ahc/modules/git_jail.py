@@ -200,7 +200,8 @@ class Git_jail(HostPath):
             user_hook: 'git-jail-post-receive-user-repo',
             '%s/post-commit' % repo_hooks: 'git-jail-post-commit-repo',
             '%s/post-receive' % repo_hooks: 'git-jail-post-receive-repo',
-            '%s/hooks/post-receive' % real_repository: 'git-jail-post-receive-real-repo',
+            '%s/hooks/post-receive' % (
+                real_repository,): 'git-jail-post-receive-real-repo',
         }
 
         putFile(
@@ -211,7 +212,8 @@ class Git_jail(HostPath):
 
         putFile(
             '%s.db' % user_hook,
-            '%(full_path)s;%(website_dir)s;./%(folder)s/*;%(key)s;%(origin)s;' % locals(),
+            '%(full_path)s;%(website_dir)s;'
+            './%(folder)s/*;%(key)s;%(origin)s;' % locals(),
             'a'
         )
 

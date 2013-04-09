@@ -26,7 +26,8 @@ class Git(HostPath):
 
         if fileExists(repository):
             error_message(
-                'File exists! Enter another hostname, or remove old repository!')
+                'File exists! Enter another hostname, '
+                'or remove old repository!')
         system_by_code('mkdir -p %s' % repository)
 
         system_by_code('cd %s && git init --bare 1> /dev/null' % repository)
@@ -34,8 +35,8 @@ class Git(HostPath):
         if fileExists('%s/.git' % website_dir):
             system_by_code('cd %s && git remote rm origin' % website_dir)
         system_by_code(
-            'cd %s && git init 1> /dev/null && git remote add origin %s' % \
-            (website_dir, repository)
+            'cd %s && git init 1> /dev/null && git remote add origin %s' % (
+                website_dir, repository)
         )
 
         putFile(post_receive, getTemplate('git-post-receive') % data)
@@ -56,7 +57,8 @@ class Git(HostPath):
         info_message(remote % (host_name, repository))
         info_message('*' * 100, 'blue')
         info_message(
-            'Create ".git/hooks/post-commit" in your local repository with code below:',
+            'Create ".git/hooks/post-commit" in your local '
+            'repository with code below:',
             'white')
         info_message('#!/bin/sh')
         info_message('git push origin master')

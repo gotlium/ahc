@@ -44,13 +44,12 @@ class Ftp(HostPath):
             error_message("Can't remove user config!")
 
     def __getFolder(self, host_name):
-        if self.base.options.disable: # where disable = folder
+        if self.base.options.disable:
             folder = self.base.options.disable
         else:
             data = self.getHostData(host_name)
             folder = data['domain_dir']
         return folder
-
 
     def add(self, host_name):
         isHost(host_name)

@@ -59,7 +59,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
 
     web_server = 'apache'
 
-
     def setUp(self):
         self.loadConfigs()
         sleep(5)
@@ -117,8 +116,8 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
 
     def _addHost(self, type, host_name, flags='', action='a', cmd_ad_opt=''):
         execution_code = os.system(
-            'ahc -m %s -t %s -%s %s %s %s -y 1> /dev/null' % \
-            (self.web_server, type, action, host_name, flags, cmd_ad_opt)
+            'ahc -m %s -t %s -%s %s %s %s -y 1> /dev/null' % (
+                self.web_server, type, action, host_name, flags, cmd_ad_opt)
         )
         self.assertEquals(execution_code, 0)
 
@@ -130,7 +129,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
 
     def _disableHost(self, type, host_name, flags='', cmd_ad_opt=''):
         self._addHost(type, host_name, flags, 'f', cmd_ad_opt)
-
 
     def _add_host_test(self, type, domains, check_line, cmd_ad_opt=""):
         for domain in domains:
@@ -151,7 +149,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
         for domain in domains:
             self._delHost(type, domain, cmd_ad_opt)
             self._checkHostNotFound(domain)
-
 
     def test_a_add_php_host(self):
         self._add_host_test(
@@ -183,7 +180,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
             'django', self.django_sub_domains, "It worked!"
         )
 
-
     def test_c_disable_php_host(self):
         self._disable_host_test(
             'php', self.php_domains
@@ -198,7 +194,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
         self._disable_host_test(
             'django', self.django_domains
         )
-
 
     def test_d_disable_php_sub_host(self):
         self._disable_host_test(
@@ -215,7 +210,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
             'django', self.django_sub_domains
         )
 
-
     def test_e_enable_php_host(self):
         self._enable_host_test(
             'php', self.php_domains, 'PHP:Hello, World!'
@@ -230,7 +224,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
         self._enable_host_test(
             'django', self.django_domains, "It worked!"
         )
-
 
     def test_f_enable_php_sub_host(self):
         self._enable_host_test(
@@ -247,7 +240,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
             'django', self.django_sub_domains, "It worked!"
         )
 
-
     def test_g_remove_php_sub_domain(self):
         self._remove_host_test(
             'php', self.php_sub_domains
@@ -263,7 +255,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
             'django', self.django_sub_domains
         )
 
-
     def test_h_remove_php_host(self):
         self._remove_host_test(
             'php', self.php_domains
@@ -278,7 +269,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
         self._remove_host_test(
             'django', self.django_domains
         )
-
 
     # WSGI
     def test_a_add_django_host_wsgi(self):
@@ -301,7 +291,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
             'django', self.django_domains_wsgi, '-w'
         )
 
-
     # Virtual env
     def test_a_add_django_host_venv(self):
         self._add_host_test(
@@ -323,7 +312,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
             'django', self.django_domains_venv, '-v'
         )
 
-
     # Virtual env + WSGI
     def test_a_add_django_host_wsgi_venv(self):
         self._add_host_test(
@@ -344,7 +332,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
         self._remove_host_test(
             'django', self.django_domains_wsgi_venv, '-v -w'
         )
-
 
     # WSGI
     def test_a_add_python_host_wsgi(self):
@@ -369,7 +356,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
             'python', self.python_domains_wsgi, '-w'
         )
 
-
     # Virtual env
     def test_a_add_python_host_venv(self):
         self._add_host_test(
@@ -392,7 +378,6 @@ class CoreHttpTestCase(unittest.TestCase, Configs):
         self._remove_host_test(
             'python', self.python_domains_venv, '-v'
         )
-
 
     # Virtual env + WSGI
     def test_a_add_python_host_wsgi_venv(self):

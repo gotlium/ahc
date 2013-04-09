@@ -24,7 +24,8 @@ class Web():
             if not system(self.get_pid_cmd):
                 status = os.system(
                     '/usr/bin/nohup /usr/bin/python manage.py runserver '
-                    '127.0.0.1:8131 --insecure --noreload >& /var/log/ahc-web.log &'
+                    '127.0.0.1:8131 --insecure --noreload >& '
+                    '/var/log/ahc-web.log &'
                 )
         else:
             status = os.system(

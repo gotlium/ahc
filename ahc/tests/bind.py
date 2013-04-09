@@ -34,7 +34,6 @@ class BindTestCase(TestCase):
         self.__addHost(sub_domain=True)
         self.__checkFound(sub_domain=True)
 
-
     def test_c_del_bind_sub_domain(self):
         self.__delHost(sub_domain=True)
 

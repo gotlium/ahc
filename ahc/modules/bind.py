@@ -56,10 +56,8 @@ class Bind(object):
         zone_file = self.__getFile(base_host)
         if not fileExists(zone_file):
             self.add(base_host)
-        elif re.findall(
-                        r'^%s.*?IN[\s]A[\s]127.0.0.1$' % sub_domain,
-                        getFile(zone_file), re.MULTILINE | re.DOTALL
-        ):
+        elif re.findall(r'^%s.*?IN[\s]A[\s]127.0.0.1$' % sub_domain,
+                        getFile(zone_file), re.MULTILINE | re.DOTALL):
             error_message('Subdomain already added!')
         return putFile(zone_file, '%s\t\tIN A %s' %
                                   (sub_domain, self.base.options.ip), 'a')

@@ -14,7 +14,7 @@ def putFile(filename, text, mode='w'):
             print >> f, text
         f.close()
         return True
-    except Exception, msg:
+    except:
         return False
 
 
@@ -23,7 +23,7 @@ def delFile(filename):
         if fileExists(filename):
             remove(filename)
             return True
-    except Exception, msg:
+    except:
         pass
     return False
 

@@ -11,7 +11,10 @@ import os
 import paramiko
 import MySQLdb
 
-from libraries.helpers import *
+from libraries.helpers import (
+    system_by_code, system, error_message, sendmail, xmppAndMail
+)
+from libraries.fs import fileExists, delFile, putFile
 
 
 class FTP(object):
@@ -63,12 +66,13 @@ class SFTP(object):
         self.config = config
 
     def __execute_cmd_and_get_stdout(self, cmd):
-        stdin, stdout, stderr = self.ssh.exec_command(cmd)
+        result = self.ssh.exec_command(cmd)
+        stdin, stdout, stderr = result
         results = stdout.readlines()
         if len(results) == 1:
             results = results[0].strip()
-        stdin.close();
-        stdout.close();
+        stdin.close()
+        stdout.close()
         stderr.close()
         return results
 
@@ -169,9 +173,11 @@ class Backup(LockFile):
                 config['local'] = os.path.basename(config['local'])
                 ftp_cmd = 'mput -d ./%(local)s -O %(remote)s; bye;'
 
-            cmd = "cd /tmp && lftp -e '" + ftp_cmd + "' -u " \
-                                                     "%(remote_username)s,%(remote_password)s " \
-                                                     "%(remote_protocol)s://%(remote_hostname)s 1> /dev/null"
+            cmd = str("cd /tmp && lftp -e '"
+                      + ftp_cmd +
+                      "' -u "
+                      "%(remote_username)s,%(remote_password)s "
+                      "%(remote_protocol)s://%(remote_hostname)s 1> /dev/null")
             return str(cmd % config)
         else:
             if is_directory:
@@ -245,8 +251,8 @@ class Backup(LockFile):
         elif self.backup['remote_protocol'] == 'local':
             if not self.backup['remote_directory']:
                 error_message('Directory not set in settings file.')
-        elif not self.backup['remote_username'] or not \
-            self.backup['remote_password']:
+        elif (not self.backup['remote_username'] or not
+              self.backup['remote_password']):
             error_message('Setup your backup settings.')
         elif self.backup['remote_protocol'] not in \
                 ('ftp', 'sftp', 'rsync', 'local'):
