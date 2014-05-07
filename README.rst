@@ -1,0 +1,298 @@
+--------------------------------------------------------------
+                            ABOUT
+--------------------------------------------------------------
+Package for control apache/nginx virtual hosts, mysql/ftp/openvpn/git/mail
+users, bind zones, apache clients certificates on
+developer/production web-hosts. Tested on
+Ubuntu/Debian Linux.
+Published under GNU GPL v.2.
+--------------------------------------------------------------
+
+##############################################################
+
+--------------------------------------------------------------
+                        INSTALLATION
+--------------------------------------------------------------
+Apache Host Control:
+--------------------------------------------------------------
+$ sudo -i
+# apt-get update && apt-get upgrade -y
+# apt-get install -y python-pip python-mysqldb python-flup git-core make python-pycurl
+# cd /usr/src/ && git clone https://github.com/gotlium/ahc.git
+# cd ahc/ && pip install -r requirements.txt && make install
+# cd && ahc -m install -s lamp && ahc -m install -s firewall
+--------------------------------------------------------------
+
+##############################################################
+
+--------------------------------------------------------------
+                            USAGE
+--------------------------------------------------------------
+Apache hosts:
+--------------------------------------------------------------
+# ahc -m install -s apache2_ssl
+# ahc -m test -s apache
+# ahc -m apache -t php -a example.com
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Nginx hosts:
+--------------------------------------------------------------
+# ahc -m install -s nginx_ssl
+# ahc -m test -s nginx
+# ahc -m nginx -t php -a example.com
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+FTP accounts:
+--------------------------------------------------------------
+# ahc -m install -s ftp
+# ahc -m test -s ftp
+# ahc -m ftp -a example.com -u User -p Password
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+MySQL accounts:
+--------------------------------------------------------------
+# ahc -m install -s mysql
+# ahc -m test -s mysql
+# ahc -m mysql -a example.com -u User -p Password
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Bind zone:
+--------------------------------------------------------------
+# ahc -m install -s bind
+# ahc -m test -s bind
+# ahc -m bind -a example.com -i 127.0.0.1
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Git deployment:
+--------------------------------------------------------------
+# ahc -m test -s git
+# ahc -m git -a example.com
+# ahc -m git -d example.com
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Git jail:
+--------------------------------------------------------------
+ahc -m test -s git_jail
+ahc -m git_jail -a mail@example.com -p 'TYPE KEY-STRING COMMENT'
+ahc -m git_jail -d mail@example.com
+ahc -m git_jail -l
+ahc -m git_jail -i example.com -e templates -u mail@example.com
+ahc -m git_jail -i example.com -f templates -u mail@example.com
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Project Protection
+--------------------------------------------------------------
+# ahc -m test -s crypt
+# ahc -m crypt -a mount
+# ahc -m crypt -a umount
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+iRedMail
+--------------------------------------------------------------
+# ahc -m install -s mail
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Firewall:
+--------------------------------------------------------------
+# ahc -m install -s firewall
+# iptables -L -n
+    or
+# cat /etc/init.d/rc.fw
+--------------------------------------------------------------
+
+##############################################################
+
+--------------------------------------------------------------
+                         EXAMPLES
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Apache2
+--------------------------------------------------------------
+# ahc -m apache -t php -a hostname -o -x
+# ahc -m apache -t php -d hostname
+# ahc -m apache -t php -e hostname
+# ahc -m apache -t php -f hostname
+# ahc -m apache -t php -l
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Nginx
+--------------------------------------------------------------
+# ahc -m nginx -t php -a hostname
+# ahc -m nginx -t php -d hostname
+# ahc -m nginx -t php -e hostname
+# ahc -m nginx -t php -f hostname
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+FTP
+--------------------------------------------------------------
+# ahc -m ftp -a hostname -u user -p password
+# ahc -m ftp -a hostname -u user -p random
+# ahc -m ftp -a hostname -u user -p password -f folder
+# ahc -m ftp -a hostname
+# ahc -m ftp -d hostname
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+MySQL
+--------------------------------------------------------------
+# ahc -m mysql -a hostname -u user -p password
+# ahc -m mysql -a hostname -u user -p random
+# ahc -m mysql -a hostname
+# ahc -m mysql -d hostname -u user
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Bind9
+--------------------------------------------------------------
+# ahc -m bind -a hostname -i ip-address
+# ahc -m bind -d hostname
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Backups
+--------------------------------------------------------------
+# ahc -m backup -b mysql
+# ahc -m backup -b site
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Tests
+--------------------------------------------------------------
+# ahc -m test -s apache
+# ahc -m test -s nginx
+# ahc -m test -s ftp
+# ahc -m test -s mysql
+# ahc -m test -s bind
+# ahc -m test -s crypt
+# ahc -m test -s git
+# ahc -m test -s git_jail
+# ahc -m test -s sendmail
+# ahc -m test -s all
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Certificates
+--------------------------------------------------------------
+# ahc -m certs -i example.com -a email-address
+# ahc -m certs -i example.com -d email-address
+# ahc -m certs -i example.com -l
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+OpenVPN
+--------------------------------------------------------------
+# ahc -m vpn -a client1
+# ahc -m vpn -d client1
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Projects protection
+--------------------------------------------------------------
+# ahc -m crypt -a encrypt
+# ahc -m crypt -a mount
+# ahc -m crypt -a umount
+# ahc -m crypt -a decrypt
+    OR
+# ahc -m crypt -a e
+# ahc -m crypt -a m
+# ahc -m crypt -a u
+# ahc -m crypt -a d
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+Service Installing
+--------------------------------------------------------------
+# ahc -m install -s apache2_ssl
+# ahc -m install -s nginx_ssl
+# ahc -m install -s ftp
+# ahc -m install -s bind
+# ahc -m install -s mysql
+# ahc -m install -s firewall
+# ahc -m install -s nginx_proxy
+# ahc -m install -s certs -i example.com
+# ahc -m install -s lighttpd
+# ahc -m install -s sendmail
+# ahc -m install -s mail
+# ahc -m install -s shell
+# ahc -m install -s jira
+# ahc -m install -s confluence
+# ahc -m install -s web
+# ahc -m install -s vpn
+# ahc -m install -s dropbox
+# ahc -m install -s all
+--------------------------------------------------------------
+
+Ahc flags:
+    --version - current version
+    -h or --help - help section
+
+Bind flags:
+    -a = add zone
+    -d = remove zone
+    -i = ip-address for a specified zone
+
+
+Certs flags:
+    -a = add user
+    -d = remove user
+    -l = List of users
+
+
+MySQL flags:
+    -a = add [database] or [hostname]
+    -d = remove database
+    -u = username(optional)
+    -p = password(optional)
+
+
+FTP flags:
+    -a = add ftp account for hostname
+    -d = remove ftp account(still working, when hostname is removed)
+    -u = username (optional)
+    -p = password (optional)
+    -f = manual specified folder (optional)
+
+    Note:
+        Default "username" & "password" is equal to hostname
+
+
+Git jail flags:
+    -a - add user
+    -p - ssh public key
+    -d - delete user
+    -l - user list
+    -i - project name (domain name)
+    -e - add access for directory in project
+    -u - email address
+    -f - remove access for directory
+
+
+Apache/Nginx flags:
+    -t = type [php,python,django,ruby,ror]
+    -a = add host
+    -d = remove host
+    -e = enable host
+    -f = disable host
+    -o = static optimization(optional)
+    -x = enable host protection(optional)
+    -l = list available websites
+    -w = wsgi config for python OR django (nginx/uwsgi)
+    -b = basic auth. params=user:password
+    -v = VirtualEnv (available for python & django)
+
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/gotlium/ahc/trend.png
+    :alt: Bitdeli badge
+    :target: https://bitdeli.com/free

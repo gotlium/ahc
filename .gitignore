@@ -7,5 +7,5 @@ db.sqlite
 *.log
 logfile
 build
-modules/shop.py
 configs-local.cfg
+shop.py
