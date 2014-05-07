@@ -9,7 +9,6 @@ from math import log
 import hashlib
 import base64
 import struct
-import xmpp
 import sys
 import re
 
@@ -189,6 +188,8 @@ def configs(section):
 	return items
 
 def xmppMessage(message):
+	import xmpp
+
 	config = configs('xmpp')
 	if int(config['enabled']) > 0:
 		jid  = xmpp.protocol.JID(config['user'])
