@@ -106,7 +106,8 @@ class LOCAL(object):
 	def get_list(self, directory):
 		if fileExists(directory):
 			files = system('ls -1 %s' % directory)
-			return ['%s/%s' % (directory, f) for f in files]
+			if files is not None:
+				return ['%s/%s' % (directory, f) for f in files]
 		return []
 
 	def remove_directories(self, files):
