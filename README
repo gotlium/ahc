@@ -17,8 +17,8 @@ Apache Host Control:
 --------------------------------------------------------------
 $ sudo -i
 # apt-get update && apt-get upgrade -y
-# apt-get install -y python-pip python-mysqldb python-flup git-core make python-pycurl
-# cd /usr/src/ && git clone https://github.com/gotlium/ahc.git
+# apt-get install -y python-pip python-mysqldb python-flup git-core make python-pycurl gcc python-dev
+# cd /usr/src/ && git clone --depth 1 https://github.com/gotlium/ahc.git
 # cd ahc/ && pip install -r requirements.txt && make install
 # cd && ahc -m install -s lamp && ahc -m install -s firewall
 --------------------------------------------------------------

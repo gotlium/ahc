@@ -30,6 +30,6 @@ cp ./keys/server.key /etc/openvpn
 cp ./keys/dh1024.pem /etc/openvpn	
 
 # Запускаем OpenVPN
-service openvpn start
+service openvpn start >& /dev/null
 
-exit
+exit 0

@@ -31,7 +31,10 @@ class Install(object):
 	def shell(self):
 		home = os.getenv('HOME')
 		shell = os.getenv('SHELL')
-		if shell.find('/bash') != -1:
+		if not shell:
+			configuration = getTemplate('bashrc')
+			filename = '%s/.bashrc' % home
+		elif shell.find('/bash') != -1:
 			configuration = getTemplate('bashrc')
 			filename = '%s/.bashrc' % home
 		elif shell.find('/zsh') != -1:
@@ -559,8 +562,9 @@ class Install(object):
 		info_message('Web application was successfully installed.')
 
 	def vpn(self):
-		system_by_code('cp ./templates/ovpn_server.conf /etc/openvpn/')
+		system_by_code('/bin/chmod +x ./templates/ovpn_install.sh')
 		system_by_code('/bin/bash "./templates/ovpn_install.sh"')
+		system_by_code('cp ./templates/ovpn_server.conf /etc/openvpn/')
 		info_message('OpenVPN successfully installed.')
 
 	def dropbox(self):

@@ -1,11 +1,11 @@
 Package: ahc
-Version: 1.5.1
+Version: 1.5.2
 Section: console
 Priority: optional
 Architecture: all
 Maintainer: GoTLiuM InSPiRiT <gotlium@gmail.com>
 Homepage: <http://code.google.com/p/apache-host-control/>
-Depends: python-pip, python-mysqldb, python-flup, git-core, make, python-pycurl
+Depends: python-pip, python-mysqldb, python-flup, git-core, make, python-pycurl, python-crypto, python-paramiko, python-virtualenv
 Pre-Depends: python
 Installed-Size: 496.1
 Description: Package for control apache/nginx virtual hosts, mysql/ftp users, bind zones, apache clients certificates on developer/production web-hosts. Tested on Ubuntu/Debian Linux. Published under GNU GPL v.2.
