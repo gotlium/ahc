@@ -12,6 +12,7 @@ import re
 import os
 
 from libraries.helpers import *
+from libraries.fs import *
 
 
 class FTP(object):
